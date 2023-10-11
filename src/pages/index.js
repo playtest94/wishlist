@@ -306,7 +306,7 @@ export default function Home() {
 
         {totalAmount > 0 && <div className="fixed right-10 bottom-12">
           <button className="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => setModalPaymentOpen(true)} >
-            <span>{`${totalAmount} USD`}</span>
+            <span>{`Abonar ${totalAmount} USD`}</span>
           </button>
         </div>}
 
@@ -423,7 +423,7 @@ export default function Home() {
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
             <div className="bg-white p-10 w-100 rounded shadow-lg">
 
-              <h2 className="mb-2 text-xl text-center font-semibold text-gray-900">Como puedes abonar:</h2>
+              <h2 className="mb-2 text-xl text-center font-semibold text-gray-900">¿Como puedo abonar?</h2>
               <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
                 <li>
                   ZELLE: ealvarado.btm@gmail.com
@@ -442,6 +442,13 @@ export default function Home() {
                 </li>
 
               </ul>
+
+              <div className="flex text-black max-w-md mt-10">
+                <svg width="30px" height="30px" viewBox="0 0 24 24" className="mr-2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 16.99V17M12 7V14M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Una vez termines, envianos el comprobante por whatsapp
+              </div>
 
               <div className="flex items-center justify-center mt-5">
                 <button type="button" className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gray-500 hover:bg-gray-400 ml-2" onClick={() => setModalPaymentOpen(false)}>
