@@ -75,6 +75,7 @@ export default function Home() {
             </div>
           </div>
         </header>
+        <h1 className="flex items-center justify-center font-semibold mt-8">Lista de regalos</h1>
 
         {products.map(product => (<div key={product.id} className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl mt-10">
           <div className="md:flex">
@@ -83,7 +84,7 @@ export default function Home() {
             </div>
             <div className="p-8">
               <div className="uppercase tracking-wide text-l text-indigo-500 font-semibold">{product.name}</div>
-              <a href={product.reference_link} className="block text-m leading-tight font-medium text-black underline">Ver referencia o tienda</a>
+              <a href={product.reference_link} className="block text-m leading-tight font-medium text-black underline">Ver referencia y tienda</a>
               <div className="tracking-wide text-sm text-black font-semibold mt-2">{`Precio estimado: ${product.estimated_price ? product.estimated_price + " USD" : " - "}`}</div>
 
               <div className="grid grid-cols-3 gap-4 mt-6">
