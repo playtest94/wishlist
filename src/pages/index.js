@@ -333,7 +333,7 @@ export default function Home() {
                   </div>)}
                 </div>}
               </div>}
-              {modalType == "complete" && <p className="text-black text-xs mb-2">Entenderemos que te encargaras del pago, si no es asi puedes utilizar la opcion de abonar y nosotros nos encargamos❤️</p>}
+              {modalType == "complete" && <p className="text-black text-xs mb-2">Entenderemos que te encargaras de la compra del regalo, si no es asi puedes utilizar la opcion de abonar y nosotros nos encargamos❤️</p>}
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700">A nombre de:</label>
