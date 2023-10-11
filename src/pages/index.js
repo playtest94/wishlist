@@ -398,6 +398,9 @@ export default function Home() {
                 <li>
                   Si presionas el boton azul con el total podras ver las opciones disponibles para recibir tu aporte
                 </li>
+                <li>
+                  Si te equivocaste puedes contactarnos al Whatsapp, y lo solucionaremos de inmediato
+                </li>
 
               </ul>
 
