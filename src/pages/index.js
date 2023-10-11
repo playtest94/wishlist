@@ -57,7 +57,6 @@ export default function Home() {
       setModalIndicationOpen(true)
       localStorage.setItem(itemKey, true)
     }
-    
   }, [])
 
   const totalAmount = useMemo(() => {
@@ -391,7 +390,7 @@ export default function Home() {
                   Si tu obsequio lo pides por internet y no llega a tiempo, no te preocupes, puedes darnoslo cuando llegue
                 </li>
                 <li>
-                  No es necesario comprar el producto completo, puedes utilizar el boton de "Abonar"
+                  No es necesario comprar el producto completo, puedes utilizar el boton de Abonar
                 </li>
                 <li>
                   Si deseas abonar en distintos productos, abajo a tu derecha aparecera un boton azul con el monto acumulado
