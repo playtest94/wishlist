@@ -83,7 +83,7 @@ export default function Home() {
             </div>
             <div className="p-8">
               <div className="uppercase tracking-wide text-l text-indigo-500 font-semibold">{product.name}</div>
-              <a href={product.reference_link} className="block text-m leading-tight font-medium text-black hover:underline">Ver referencia</a>
+              <a href={product.reference_link} className="block text-m leading-tight font-medium text-black underline">Ver referencia o tienda</a>
               <div className="tracking-wide text-sm text-black font-semibold mt-2">{`Precio estimado: ${product.estimated_price ? product.estimated_price + " USD" : " - "}`}</div>
 
               <div className="grid grid-cols-3 gap-4 mt-6">
