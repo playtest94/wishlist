@@ -285,7 +285,7 @@ export default function Home() {
 
         </header>
         <h1 className="flex items-center justify-center font-semibold mt-8 text-3xl">Lista de regalos</h1>
-        <p className="mt-2 p-4">Nuestro mayor regalo es compartir este momento tan especial con ustedes. Pero si le quieres dar un obsequio a nuestro bebe acá te dejamos algunas opciones:</p>
+        <p className="mt-2 p-4 text-center">Nuestro mayor regalo es compartir este momento tan especial con ustedes. Pero si le quieres dar un obsequio a nuestro bebe acá te dejamos algunas opciones:</p>
 
         {products.map(product => (
           <Product key={product.id}
