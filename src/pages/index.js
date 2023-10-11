@@ -306,7 +306,7 @@ export default function Home() {
 
         {totalAmount > 0 && <div className="fixed right-10 bottom-12">
           <button className="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => setModalPaymentOpen(true)} >
-            <span>{`Abonar ${totalAmount} USD`}</span>
+            <span>{`Total: ${totalAmount} USD`}</span>
           </button>
         </div>}
 
@@ -393,10 +393,10 @@ export default function Home() {
                   No es necesario comprar el producto completo, puedes utilizar el boton de Abonar
                 </li>
                 <li>
-                  Si deseas abonar en distintos productos, abajo a tu derecha aparecera un boton azul con el monto acumulado
+                  Si deseas abonar en distintos productos, abajo a tu derecha aparecera un boton azul con el monto total acumulado
                 </li>
                 <li>
-                  Si presionas el boton azul podras ver las opciones disponibles para recibir tu aporte
+                  Si presionas el boton azul con el total podras ver las opciones disponibles para recibir tu aporte
                 </li>
 
               </ul>
