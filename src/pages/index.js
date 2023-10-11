@@ -302,7 +302,7 @@ export default function Home() {
           />
         ))}
 
-        {participant && <div className="fixed left-4 top-4">{`¡Gracias ${participant?.name}! ❤️`}</div>}
+        {participant && <div className="fixed left-4 top-4 bg-black bg-opacity-50 rounded p-5">{`¡Gracias ${participant?.name}! ❤️`}</div>}
 
         {totalAmount > 0 && <div className="fixed right-10 bottom-12">
           <button className="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => setModalPaymentOpen(true)} >
