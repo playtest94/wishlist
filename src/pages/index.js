@@ -51,7 +51,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const itemKey = "first_open"
+    const itemKey = "first_open2"
     const isFirstTime = localStorage.getItem(itemKey)
     if (isFirstTime == null) {
       setModalIndicationOpen(true)
@@ -271,7 +271,7 @@ export default function Home() {
       <div className="md:container md:mx-auto pt-10 pb-10">
 
         <header className="relative bg-cover bg-center bg-opacity-50 bg-blue-500 h-96 md:max-w-2xl mx-auto " style={{ backgroundImage: 'url("https://res.cloudinary.com/dzbdfh66n/image/upload/v1697052496/wishlist/cusnrvwyvkomval5lhwj.png")' }}>
-          <button className="w-10 h-10 absolute top-2 right-2 hover:bg-white-200 active:bg-gray-500 active:bg-opacity-50" onClick={() => setModalIndicationOpen(true)}>
+          <button className="w-10 h-10 absolute top-2 right-2 hover:bg-white-200 bg-black rounded bg-opacity-70 active:bg-gray-500 active:bg-opacity-50" onClick={() => setModalIndicationOpen(true)}>
             <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 16.99V17M12 7V14M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -379,36 +379,29 @@ export default function Home() {
       {
         isModalIndicationOpen && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-            <div className="bg-white p-10 w-100 rounded shadow-lg">
+            <div className="bg-white p-5 w-100 rounded shadow-lg">
 
               <h2 className="mb-2 text-xl text-center font-semibold text-gray-900">Aclaraciones:</h2>
               <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
                 <li>
-                  No es necesario comprar el producto en la tienda indicada en la referencia. El link es solo una guía
+                  Regalar: Entendemos que te haras cargo la gestion de comprar y pagar el producto.
+                </li>
+                <li>
+                  Abonar: Significa que aportaras una parte del costo del producto, y nosotros nos encargaremos de toda la gestion.
                 </li>
                 <li>
                   Si tu obsequio lo pides por internet y no llega a tiempo, no te preocupes, puedes darnoslo cuando llegue
                 </li>
                 <li>
-                  No es necesario comprar el producto completo, puedes utilizar el boton de Abonar
+                  Puedes abonar en distintos productos y abajo a tu derecha aparecera un boton azul(presionalo para ver las opciones de pago) con el monto total que todos tus abonos.
                 </li>
-                <li>
-                  Si deseas abonar en distintos productos, abajo a tu derecha aparecera un boton azul con el monto total acumulado
-                </li>
-                <li>
-                  Si presionas el boton azul con el total podras ver las opciones disponibles para recibir tu aporte
-                </li>
-                <li>
-                  Si te equivocaste puedes contactarnos al Whatsapp, y lo solucionaremos de inmediato
-                </li>
-
               </ul>
 
-              <div className="flex text-black max-w-md mt-10">
+              <div className="flex text-black max-w-md mt-5">
                 <svg width="30px" height="30px" viewBox="0 0 24 24" className="mr-2" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 16.99V17M12 7V14M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Puedes volver a ver estas aclaraciones en el boton que esta arriba a la derecha:
+                Arriba a la derecha tienes un boton para ver esto de nuevo
               </div>
 
               <div className="flex items-center justify-center mt-5">
@@ -424,7 +417,7 @@ export default function Home() {
       {
         isModalPaymentOpen && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-            <div className="bg-white p-10 w-100 rounded shadow-lg">
+            <div className="bg-white p-5 w-100 rounded shadow-lg">
 
               <h2 className="mb-2 text-xl text-center font-semibold text-gray-900">¿Como puedo abonar?</h2>
               <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
