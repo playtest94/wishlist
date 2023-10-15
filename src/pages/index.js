@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 
 
 import { Inter } from 'next/font/google'
-import Confetti from 'react-confetti'
+import Confetti from '@/components/Conffeti'
 
 import Product from '@/components/Product';
 
@@ -13,8 +13,6 @@ import supabase from "@/helpers/supabase-client"
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home({ productsData, participantData }) {
-
-  const { width, height } = useWindowSize()
   const [showConffeti, setShowConffeti] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalIndicationOpen, setModalIndicationOpen] = useState(false);
@@ -93,6 +91,16 @@ export default function Home({ productsData, participantData }) {
     if (!error && data.length) setParticipant(data[0])
   };
 
+  useEffect(() => {
+    let timer
+    if (showConffeti) {
+      timer = setTimeout(() => {
+        setShowConffeti(false)
+        modalType==="credit" && setModalPaymentOpen(true)
+      }, 3000)
+    }
+    return () => timer && clearTimeout(timer)
+  }, [showConffeti])
 
   const updateProductOnList = (updatedProduct) => {
     if (!updatedProduct) return
@@ -200,9 +208,6 @@ export default function Home({ productsData, participantData }) {
       updateProductOnList(productUpdated[0])
       setFormData({ ...formData, amount: "" })
       fetchParticipantById(pId)
-
-      alert('Gracias por tu aporte, te lo agradecemos un monton');
-      isCredit && setModalPaymentOpen(true)
       setShowConffeti(true)
       closeModal()
     } catch (error) {
@@ -222,9 +227,7 @@ export default function Home({ productsData, participantData }) {
     if (participant) setFormData({ ...formData, name: participant.name })
   }, [participant])
 
-  useEffect(() => {
 
-  }, [])
 
   return (
     <main
@@ -279,7 +282,7 @@ export default function Home({ productsData, participantData }) {
         {participant && <div className="fixed left-4 top-4 bg-black bg-opacity-50 rounded p-5">{`¡Gracias ${participant?.name}! ❤️`}</div>}
 
         {totalAmount > 0 && <div className="fixed right-10 bottom-12">
-          <button className="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => {
+          <button className="animate-bounce bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => {
             sendEvent(EventTrack.EventTypes.OPEN_PAYMENT_METHODS_PRESS)
             setModalPaymentOpen(true)
           }} >
@@ -310,7 +313,8 @@ export default function Home({ productsData, participantData }) {
                   </div>)}
                 </div>}
               </div>}
-              {modalType == "complete" && <p className="text-black text-xs mb-2">Entenderemos que te encargaras de la compra del regalo, si no es asi puedes utilizar la opcion de abonar y nosotros nos encargamos❤️</p>}
+              {modalType == "complete" && <p className="text-black text-xs mb-2">Te encargaras de la compra del regalo, si no es asi puedes utilizar la opcion de abonar y nosotros nos encargamos ❤️</p>}
+              {modalType == "credit" && <p className="text-black text-xs mb-2">Haras el pago a algunas de nuestras cuentas para reunir el monto total y poder comprar el producto ❤️</p>}
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700">A nombre de:</label>
@@ -433,43 +437,11 @@ export default function Home({ productsData, participantData }) {
         )
       }
 
+      {showConffeti && <Confetti />}
 
     </main >
   )
 }
-
-// Hook
-function useWindowSize() {
-  // Initialize state with undefined width/height so server and client renders match
-  // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
-  const [windowSize, setWindowSize] = useState({
-    width: undefined,
-    height: undefined,
-  });
-
-  useEffect(() => {
-    // only execute all the code below in client side
-    // Handler to call on window resize
-    function handleResize() {
-      // Set window width/height to state
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
-
-    // Add event listener
-    window.addEventListener("resize", handleResize);
-
-    // Call handler right away so state gets updated with initial window size
-    handleResize();
-
-    // Remove event listener on cleanup
-    return () => window.removeEventListener("resize", handleResize);
-  }, []); // Empty array ensures that effect is only run on mount
-  return windowSize;
-}
-
 
 
 const fetchParticipantByNotionId = async (participantId) => supabase
@@ -489,7 +461,6 @@ const fetchProducts = () => supabase
 
 
 export async function getServerSideProps(ctx) {
-  console.log("args", ctx.query)
   const { p: notionId } = ctx.query
   const { data: dataProducts } = await fetchProducts()
   let participant = null
