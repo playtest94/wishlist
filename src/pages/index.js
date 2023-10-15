@@ -4,28 +4,24 @@ import { useState, useEffect, useMemo } from 'react';
 import { Inter } from 'next/font/google'
 import Confetti from 'react-confetti'
 
-import { createClient } from '@supabase/supabase-js';
 import Product from '@/components/Product';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import * as EventTrack from "@/helpers/events"
+
+import supabase from "@/helpers/supabase-client"
 
 const inter = Inter({ subsets: ['latin'] })
 
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-
-export default function Home() {
+export default function Home({ productsData, participantData }) {
 
   const { width, height } = useWindowSize()
   const [showConffeti, setShowConffeti] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalIndicationOpen, setModalIndicationOpen] = useState(false);
   const [isModalPaymentOpen, setModalPaymentOpen] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(productsData || []);
   const [selectedProduct, setSelectedProduct] = useState();
-  const [participant, setParticipant] = useState();
+  const [participant, setParticipant] = useState(participantData);
   const [productParticipants, setProductParticipants] = useState([]);
   const [showParticipants, setShowParticipants] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -50,12 +46,19 @@ export default function Home() {
     // resetDatabase()
   }, [])
 
+  const sendEvent = (name, { participantId = participant?.id, productId = selectedProduct?.id, extra = {} } = {}) =>
+    EventTrack.send(name, participantId, productId, extra)
+
   useEffect(() => {
-    const itemKey = "first_open2"
+    const itemKey = "first_open3"
     const isFirstTime = localStorage.getItem(itemKey)
     if (isFirstTime == null) {
       setModalIndicationOpen(true)
       localStorage.setItem(itemKey, true)
+      localStorage.setItem("first_id", participant?.id)
+      sendEvent(EventTrack.EventTypes.FIRST_LOAD)
+    } else {
+      sendEvent(EventTrack.EventTypes.LOAD)
     }
   }, [])
 
@@ -69,19 +72,6 @@ export default function Home() {
     amount: '',
   });
 
-
-  const fetchProducts = async () => {
-    const { data, error } = await supabase
-      .from('Products')
-      .select('*,Participants(id,name))')
-      .order('reserved', { ascending: true })
-      .order('credit_amount', { ascending: false })
-      .order('priority', { ascending: false });
-    if (!error) setProducts(data)
-  };
-
-
-
   const fetchParticipantsInAProduct = (productId) => {
     return supabase
       .from('ProductParticipants')
@@ -92,15 +82,6 @@ export default function Home() {
   const handleFetchParticipantsInAProduct = async (productId) => {
     const { data, error } = await fetchParticipantsInAProduct(productId)
     if (!error) setProductParticipants(data)
-  };
-
-
-  const fetchParticipantByNotionId = async (participantId) => {
-    const { data, error } = await supabase
-      .from('Participants')
-      .select('*,ProductParticipants(*)')
-      .eq("notion_id", participantId)
-    if (!error && data.length) setParticipant(data[0])
   };
 
   const fetchParticipantById = async (participantId) => {
@@ -122,25 +103,6 @@ export default function Home() {
 
   }
 
-  const readQuery = () => {
-    const url = new URL(window.location.href)
-
-    if (url?.search) {
-      const [, queryPath] = url?.search.split("?")
-      if (queryPath) {
-        const queryTexts = queryPath.split("&")
-        const query = queryTexts.map(text => {
-          const [name, value] = text.split("=")
-          return ({ name, value })
-        })
-        const participantid = query.find(e => e.name == "p")?.value
-
-        if (participantid) fetchParticipantByNotionId(participantid)
-      }
-    }
-
-  }
-
   const openModal = (product, type) => {
     setIsModalOpen(true);
     setSelectedProduct(product)
@@ -153,6 +115,7 @@ export default function Home() {
     setSelectedProduct(null);
     setProductParticipants([])
     setShowParticipants(false)
+    setFormData({ ...formData, amount: "" })
   };
 
 
@@ -226,7 +189,7 @@ export default function Home() {
         .eq('id', selectedProduct.id)
         .select("*,Participants(id,name)")
 
-      if (productUpdateError) {//rollback relationship
+      if (!productUpdated.length || productUpdateError) {//rollback relationship
         await supabase
           .from("ProductParticipants")
           .delete()
@@ -260,8 +223,7 @@ export default function Home() {
   }, [participant])
 
   useEffect(() => {
-    fetchProducts()
-    readQuery()
+
   }, [])
 
   return (
@@ -271,7 +233,10 @@ export default function Home() {
       <div className="md:container md:mx-auto pt-10 pb-10">
 
         <header className="relative bg-cover bg-center bg-opacity-50 bg-blue-500 h-96 md:max-w-2xl mx-auto " style={{ backgroundImage: 'url("https://res.cloudinary.com/dzbdfh66n/image/upload/v1697052496/wishlist/cusnrvwyvkomval5lhwj.png")' }}>
-          <button className="w-10 h-10 absolute top-2 right-2 hover:bg-white-200 bg-black rounded bg-opacity-70 active:bg-gray-500 active:bg-opacity-50" onClick={() => setModalIndicationOpen(true)}>
+          <button className="w-10 h-10 absolute top-2 right-2 hover:bg-white-200 bg-black rounded bg-opacity-70 active:bg-gray-500 active:bg-opacity-50" onClick={() => {
+            sendEvent(EventTrack.EventTypes.OPEN_ACLARATIONS_PRESS)
+            setModalIndicationOpen(true)
+          }}>
             <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 16.99V17M12 7V14M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -296,8 +261,17 @@ export default function Home() {
             estimatedPrice={product.estimated_price}
             creditAmount={product.credit_amount}
             reserved={product.reserved}
-            onGiftPress={() => openModal(product, "complete")}
-            onCreditPress={() => openModal(product, "credit")}
+            onGiftPress={() => {
+              sendEvent(EventTrack.EventTypes.GIFT_PRESS, { productId: product.id })
+              openModal(product, "complete")
+            }}
+            onCreditPress={() => {
+              sendEvent(EventTrack.EventTypes.CREDIT_PRESS, { productId: product.id })
+              openModal(product, "credit")
+            }}
+            onReferenceLinkPress={() => {
+              sendEvent(EventTrack.EventTypes.OPEN_REFERENCE_PRESS, { productId: product.id })
+            }}
             fetchParticipantsInAProduct={fetchParticipantsInAProduct}
           />
         ))}
@@ -305,7 +279,10 @@ export default function Home() {
         {participant && <div className="fixed left-4 top-4 bg-black bg-opacity-50 rounded p-5">{`¡Gracias ${participant?.name}! ❤️`}</div>}
 
         {totalAmount > 0 && <div className="fixed right-10 bottom-12">
-          <button className="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => setModalPaymentOpen(true)} >
+          <button className="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => {
+            sendEvent(EventTrack.EventTypes.OPEN_PAYMENT_METHODS_PRESS)
+            setModalPaymentOpen(true)
+          }} >
             <span>{`Total: ${totalAmount} USD`}</span>
           </button>
         </div>}
@@ -491,4 +468,40 @@ function useWindowSize() {
     return () => window.removeEventListener("resize", handleResize);
   }, []); // Empty array ensures that effect is only run on mount
   return windowSize;
+}
+
+
+
+const fetchParticipantByNotionId = async (participantId) => supabase
+  .from('Participants')
+  .select('*,ProductParticipants(*)')
+  .eq("notion_id", participantId)
+
+
+const fetchProducts = () => supabase
+  .from('Products')
+  .select('*,Participants(id,name))')
+  .order('reserved', { ascending: true })
+  .order('credit_amount', { ascending: false })
+  .order('priority', { ascending: false });
+
+
+
+
+export async function getServerSideProps(ctx) {
+  console.log("args", ctx.query)
+  const { p: notionId } = ctx.query
+  const { data: dataProducts } = await fetchProducts()
+  let participant = null
+  if (notionId) {
+    const { data } = await fetchParticipantByNotionId(notionId)
+    if (data?.length) participant = data[0]
+  }
+  // Pass data to the page via props
+  return {
+    props: {
+      productsData: dataProducts || null,
+      participantData: participant || null
+    }
+  }
 }
