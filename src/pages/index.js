@@ -13,6 +13,7 @@ import supabase from "@/helpers/supabase-client"
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home({ productsData, participantData }) {
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [showConffeti, setShowConffeti] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalIndicationOpen, setModalIndicationOpen] = useState(false);
@@ -96,11 +97,21 @@ export default function Home({ productsData, participantData }) {
     if (showConffeti) {
       timer = setTimeout(() => {
         setShowConffeti(false)
-        modalType==="credit" && setModalPaymentOpen(true)
-      }, 3000)
+        modalType === "credit" && setModalPaymentOpen(true)
+      }, 4000)
     }
     return () => timer && clearTimeout(timer)
   }, [showConffeti])
+
+  useEffect(() => {
+    let timer
+    if (showSuccessMessage) {
+      timer = setTimeout(() => {
+        setShowSuccessMessage(false)
+      }, 3000)
+    }
+    return () => timer && clearTimeout(timer)
+  }, [showSuccessMessage])
 
   const updateProductOnList = (updatedProduct) => {
     if (!updatedProduct) return
@@ -208,6 +219,7 @@ export default function Home({ productsData, participantData }) {
       updateProductOnList(productUpdated[0])
       setFormData({ ...formData, amount: "" })
       fetchParticipantById(pId)
+      setShowSuccessMessage(true)
       setShowConffeti(true)
       closeModal()
     } catch (error) {
@@ -288,6 +300,10 @@ export default function Home({ productsData, participantData }) {
           }} >
             <span>{`Total: ${totalAmount} USD`}</span>
           </button>
+        </div>}
+
+        {showSuccessMessage && < div id="toast-bottom-left" class="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow bottom-5 left-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800" role="alert">
+          <div class="text-sm font-normal">Gracias por tu aporte, te lo agradecemos un monton ❤️</div>
         </div>}
 
       </div>
@@ -400,7 +416,7 @@ export default function Home({ productsData, participantData }) {
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
             <div className="bg-white p-5 w-100 rounded shadow-lg">
 
-              <h2 className="mb-2 text-xl text-center font-semibold text-gray-900">¿Como puedo abonar?</h2>
+              <h2 className="mb-2 text-lg text-center font-semibold text-gray-900">{`¿Como puedo abonar mis ${totalAmount} USD?`}</h2>
               <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
                 <li>
                   ZELLE: ealvarado.btm@gmail.com
