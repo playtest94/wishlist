@@ -10,6 +10,26 @@ export const EventTypes = {
     OPEN_PAYMENT_METHODS_PRESS: "OPEN_PAYMENT_METHODS_PRESS"
 }
 
+export const EventTypesTitles = {
+    LOAD: "Abrio la pagina",
+    FIRST_LOAD: "Abrio la pagina por primera vez",
+    GIFT_PRESS: "Presiono Regalar",
+    CREDIT_PRESS: "Presiono Abonar",
+    OPEN_REFERENCE_PRESS: "Vio una referencia",
+    OPEN_ACLARATIONS_PRESS: "Abrio las aclaraciones",
+    OPEN_PAYMENT_METHODS_PRESS: "Abrio los metodos de pago"
+}
+
+export const EventTypesDesc = {
+    LOAD: () => "",
+    FIRST_LOAD: () => "",
+    GIFT_PRESS: (productName) => `Presiono Regalar en ${productName}`,
+    CREDIT_PRESS: (productName) => `Presiono Abonr en ${productName}`,
+    OPEN_REFERENCE_PRESS: (productName) => `Vio la referencia de ${productName}`,
+    OPEN_ACLARATIONS_PRESS: () => "",
+    OPEN_PAYMENT_METHODS_PRESS: () => "",
+}
+
 export const send = async (name, participantId, productId, extra = {}) => {
     const { data, error } = await supabase
         .from('Events')
