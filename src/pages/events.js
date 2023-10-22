@@ -154,32 +154,16 @@ export default function Events({ eventsData }) {
 }
 
 
-const fetchParticipantByNotionId = async (participantId) => supabase
-    .from('Participants')
-    .select('*,ProductParticipants(*)')
-    .eq("notion_id", participantId)
-
-
-const fetchProducts = () => supabase
-    .from('Products')
-    .select('*,Participants(id,name))')
-    .eq("visible", true)
-    .order('reserved', { ascending: true })
-    .order('credit_amount', { ascending: false })
-    .order('priority', { ascending: false });
-
-
-
 const fetchEvents = () => supabase
     .from('Events')
-    .select('*,Participants(id,name), Products(id,name))')
+    .select('*,Participants(id,name), Products(id,name)')
     .order('created_at', { ascending: false })
 
 
 export async function getServerSideProps(ctx) {
     const { data: dataEvents, error } = await fetchEvents()
 
-    // console.log(dataEvents.length, error)
+    dataEvents.length && console.log(dataEvents[0])
     // Pass data to the page via props
     return {
         props: {
