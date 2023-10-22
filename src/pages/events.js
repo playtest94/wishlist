@@ -49,19 +49,21 @@ export default function Events({ eventsData }) {
 
             })
 
-            return { date: key, participants: groupedByParticipantArray }
 
+            const groupedByParticipantArraySorted = groupedByParticipantArray.sort((a, b) => {
+                const first = new Date(b.lastEventDate)
+                const second = new Date(a.lastEventDate)
+                return first.getTime() > second.getTime()
+            })
+
+            return {
+                date: key, participants: groupedByParticipantArraySorted
+            }
 
         })
 
 
-        // console.log("groupedByParticipants", groupedByParticipants);
-
-        return groupedByParticipants.sort((a, b) => {
-            const first = new Date(a.lastEventDate)
-            const second = new Date(b.lastEventDate)
-            return first.getTime() > second.getTime()
-        })
+        return groupedByParticipants
     }, [events])
 
 
@@ -114,12 +116,9 @@ export default function Events({ eventsData }) {
                                     } `}</h2>
 
 
-
-
-
                                 <ol class="relative border-l border-gray-200 dark:border-gray-700 mt-4">
 
-                                    {detailData.events.map(event => {
+                                    {detailData.events.toReversed().map(event => {
                                         const options = { hour: "2-digit", minute: "2-digit" };
                                         const time = new Intl.DateTimeFormat('es-ES', options).format(new Date(event.created_at))
                                         const title = EventTrack.EventTypesTitles[event.name]
@@ -163,7 +162,7 @@ const fetchEvents = () => supabase
 export async function getServerSideProps(ctx) {
     const { data: dataEvents, error } = await fetchEvents()
 
-    dataEvents.length && console.log(dataEvents[0])
+    // dataEvents.length && console.log(dataEvents[0])
     // Pass data to the page via props
     return {
         props: {
