@@ -468,7 +468,7 @@ const fetchParticipantByNotionId = async (participantId) => supabase
 
 const fetchProducts = () => supabase
   .from('Products')
-  .select('*,Participants(id,name))')
+  .select('*,Participants(id,name)')
   .eq("visible", true)
   .order('reserved', { ascending: true })
   .order('credit_amount', { ascending: false })
