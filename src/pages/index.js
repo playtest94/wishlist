@@ -475,8 +475,6 @@ const fetchProducts = () => supabase
   .order('priority', { ascending: false });
 
 
-
-
 export async function getServerSideProps(ctx) {
   const { p: notionId } = ctx.query
   const { data: dataProducts } = await fetchProducts()
