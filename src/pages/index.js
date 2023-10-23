@@ -63,7 +63,7 @@ export default function Home({ productsData, participantData }) {
 
   const totalAmount = useMemo(() => {
     if (!participant?.ProductParticipants) return 0
-    return participant.ProductParticipants.reduce((accumulator, currentValue) => accumulator + (currentValue.is_credit ? currentValue.amount : 0), 0);
+    return participant.ProductParticipants.reduce((accumulator, currentValue) => accumulator + (currentValue.amount), 0);
 
   }, [participant?.ProductParticipants])
   const [formData, setFormData] = useState({
