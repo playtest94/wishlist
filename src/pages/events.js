@@ -53,7 +53,9 @@ export default function Events({ eventsData }) {
             const groupedByParticipantArraySorted = groupedByParticipantArray.sort((a, b) => {
                 const first = new Date(b.lastEventDate)
                 const second = new Date(a.lastEventDate)
-                return first.getTime() > second.getTime()
+                if (first.getTime() < second.getTime()) -1
+                if (first.getTime() > second.getTime()) 1
+                return 0
             })
 
             return {
@@ -116,18 +118,18 @@ export default function Events({ eventsData }) {
                                     } `}</h2>
 
 
-                                <ol class="relative border-l border-gray-200 dark:border-gray-700 mt-4">
+                                <ol className="relative border-l border-gray-200 dark:border-gray-700 mt-4">
 
                                     {detailData.events.toReversed().map(event => {
                                         const options = { hour: "2-digit", minute: "2-digit" };
                                         const time = new Intl.DateTimeFormat('es-ES', options).format(new Date(event.created_at))
                                         const title = EventTrack.EventTypesTitles[event.name]
                                         const desc = EventTrack.EventTypesDesc[event.name](event.Products?.name)
-                                        return <li key={event.id} class="mb-10 ml-4">
-                                            <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                                            <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{time}</time>
-                                            <h3 class="text-md font-semibold text-gray-900 dark:text-black">{title}</h3>
-                                            <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
+                                        return <li key={event.id} className="mb-10 ml-4">
+                                            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                                            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{time}</time>
+                                            <h3 className="text-md font-semibold text-gray-900 dark:text-black">{title}</h3>
+                                            <p className="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
                                                 {desc}
                                             </p>
 
