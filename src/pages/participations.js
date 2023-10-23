@@ -1,12 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 
 import { Inter } from 'next/font/google'
-import Confetti from '@/components/Conffeti'
-
-import Product from '@/components/Product';
-
-import * as EventTrack from "@/helpers/events"
 
 import supabase from "@/helpers/supabase-client"
 
@@ -15,50 +10,11 @@ const inter = Inter({ subsets: ['latin'] })
 
 const nonEditable = ["id", "created_at", "product_id", "participant_id"]
 
-export default function Participations({ participationData, productsData, participantData }) {
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
-  const [showConffeti, setShowConffeti] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function Participations({ participationData }) {
   const [detailData, setDetailData] = useState(false);
-  const [isModalIndicationOpen, setModalIndicationOpen] = useState(false);
-  const [isModalPaymentOpen, setModalPaymentOpen] = useState(false);
   const [participations, setParticipations] = useState(participationData || []);
-  const [products, setProducts] = useState(productsData || []);
-  const [selectedProduct, setSelectedProduct] = useState();
-  const [participant, setParticipant] = useState(participantData);
-  const [productParticipants, setProductParticipants] = useState([]);
-  const [showParticipants, setShowParticipants] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [modalType, setModalType] = useState();
 
-
-
-  const sendEvent = (name, { participantId = participant?.id, productId = selectedProduct?.id, extra = {} } = {}) =>
-    EventTrack.send(name, participantId, productId, extra)
-
-
-  const totalAmount = useMemo(() => {
-    if (!participant?.ProductParticipants) return 0
-    return participant.ProductParticipants.reduce((accumulator, currentValue) => accumulator + (currentValue.is_credit ? currentValue.amount : 0), 0);
-
-  }, [participant?.ProductParticipants])
-  const [formData, setFormData] = useState({
-
-  });
-
-  const fetchParticipantsInAProduct = (productId) => {
-    return supabase
-      .from('ProductParticipants')
-      .select('*,Participants(*)')
-      .eq("product_id", productId)
-  };
-
-  const openModal = (product, type) => {
-    setIsModalOpen(true);
-    setSelectedProduct(product)
-    setModalType(type)
-    if (type === 'complete') setFormData({ ...formData, amount: product.estimated_price || '' })
-  };
 
   const closeModal = () => {
     setDetailData(null)
@@ -67,8 +23,7 @@ export default function Participations({ participationData, productsData, partic
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-
+    setIsLoading(true)
 
     const dataToSend = {}
 
@@ -79,18 +34,26 @@ export default function Participations({ participationData, productsData, partic
     })
 
     console.log("dataToSend", dataToSend)
-    const { data, error } = await supabase
-      .from('ProductParticipants')
-      .update(dataToSend)
-      .eq('id', formData.id)
-      .select('*, Participants(*), Products(*)')
 
-    if (!error && data.length) {
-      updateParticipationOnList(data[0])
-      setDetailData(null)
+    try {
+      const { data, error } = await supabase
+        .from('ProductParticipants')
+        .update(dataToSend)
+        .eq('id', formData.id)
+        .select('*, Participants(*), Products(*)')
+
+      if (error) throw error
+      if (data.length) {
+        updateParticipationOnList(data[0])
+        setDetailData(null)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
     }
 
-    console.log("update", data, error)
+
 
   }
 
@@ -113,7 +76,6 @@ export default function Participations({ participationData, productsData, partic
     setFormData(detailData || {})
   }, [detailData])
 
-  console.log(detailData)
 
   return (
     <main
