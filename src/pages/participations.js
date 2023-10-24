@@ -14,7 +14,7 @@ export default function Participations({ participationData }) {
   const [detailData, setDetailData] = useState(false);
   const [participations, setParticipations] = useState(participationData || []);
   const [isLoading, setIsLoading] = useState(false)
-
+  const [formData, setFormData] = useState({});
 
   const closeModal = () => {
     setDetailData(null)
@@ -26,7 +26,6 @@ export default function Participations({ participationData }) {
     setIsLoading(true)
 
     const dataToSend = {}
-
     Object.keys(formData).forEach((key) => {
       if (!nonEditable.includes(key) && typeof (formData[key]) != "object") {
         dataToSend[key] = formData[key]
@@ -81,7 +80,7 @@ export default function Participations({ participationData }) {
     <main
       className={`${inter.className}`}
     >
-      <div className="md:container md:mx-auto pt-10 pb-10">
+      <div className="sm:container sm:mx-auto pt-10 pb-10">
 
         <h1 className="flex items-center justify-center font-semibold mb-8 text-3xl">Abonos</h1>
 
@@ -100,10 +99,13 @@ export default function Participations({ participationData }) {
                   Monto
                 </th>
                 <th scope="col" className="px-6 py-3">
+                  Metodo
+                </th>
+                <th scope="col" className="px-6 py-3">
                   Es Abono?
                 </th>
                 <th scope="col" className="px-6 py-3">
-
+                  -
                 </th>
               </tr>
             </thead>
@@ -113,6 +115,8 @@ export default function Participations({ participationData }) {
                   id,
                   is_credit: isCredit,
                   amount,
+                  payment_method: paymentMethod,
+                  completed,
                   Products: product,
                   Participants: participant } = participation
 
@@ -125,6 +129,9 @@ export default function Participations({ participationData }) {
                   </td>
                   <td className="px-6 py-4">
                     {amount}
+                  </td>
+                  <td className="px-6 py-4">
+                    {`${paymentMethod || ""}${completed ? " - ✅" : ""}`}
                   </td>
                   <td className="px-6 py-4">
                     {isCredit ? "SI" : "NO"}
@@ -161,7 +168,7 @@ export default function Participations({ participationData }) {
                   Es Abono?
                 </th>
                 <th scope="col" className="px-6 py-3">
-
+                  -
                 </th>
               </tr>
             </thead>
@@ -211,8 +218,7 @@ export default function Participations({ participationData }) {
 
                 {Object.keys(formData).map(key => {
 
-
-                  if (typeof (formData[key]) === "object" && formData[key].name) {
+                  if (formData[key] && typeof (formData[key]) === "object" && formData[key].name) {
                     return <div className="mb-4" key={`${key}_name`}>
                       <label htmlFor="amount" className="text-sm font-medium text-gray-700">{`${key}_name:`}</label>
                       <input
