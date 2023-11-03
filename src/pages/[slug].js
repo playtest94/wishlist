@@ -405,19 +405,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         </div>}
 
 
-        {editMode && showProductForm &&
-          <ItemFormModal
-            folderName={wishlist?.slug}
-            data={selectedProduct}
-            onSubmit={handleProductSubmit}
-            onClosePress={() => {
-              setShowProductForm(false);
-              setSelectedProduct(null);
-            }}
-            nonEditable={["id"]}
-            nonVisible={["Participants", "wishlist", "created_at", "credit_amount"]}
-            exclude={["Participants", "credit_amount"]}
-          />}
+
 
       </div>
 
@@ -565,6 +553,20 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
           </div>
         )
       }
+
+      {editMode && showProductForm &&
+        <ItemFormModal
+          folderName={wishlist?.slug}
+          data={selectedProduct}
+          onSubmit={handleProductSubmit}
+          onClosePress={() => {
+            setShowProductForm(false);
+            setSelectedProduct(null);
+          }}
+          nonEditable={["id"]}
+          nonVisible={["Participants", "wishlist", "created_at", "credit_amount"]}
+          exclude={["Participants", "credit_amount"]}
+        />}
 
       {showConffeti && <Confetti />}
 
