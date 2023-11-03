@@ -10,9 +10,12 @@ import * as EventTrack from "@/helpers/events"
 
 import supabase from "@/helpers/supabase-client"
 
+import ItemFormModal from '@/components/ItemFormModal';
+
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home({ productsData, participantData }) {
+export default function Home({ wishlist, error, editMode = false, productsData, participantData, }) {
+
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [showConffeti, setShowConffeti] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,6 +26,7 @@ export default function Home({ productsData, participantData }) {
   const [participant, setParticipant] = useState(participantData);
   const [productParticipants, setProductParticipants] = useState([]);
   const [showParticipants, setShowParticipants] = useState(false)
+  const [showProductForm, setShowProductForm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [modalType, setModalType] = useState();
 
@@ -46,7 +50,7 @@ export default function Home({ productsData, participantData }) {
   }, [])
 
   const sendEvent = (name, { participantId = participant?.id, productId = selectedProduct?.id, extra = {} } = {}) =>
-    EventTrack.send(name, participantId, productId, extra)
+    !editMode && EventTrack.send(name, participantId, productId, wishlist.id, extra)
 
   useEffect(() => {
     const itemKey = "first_open3"
@@ -119,6 +123,24 @@ export default function Home({ productsData, participantData }) {
     if (index == -1) return
 
     setProducts([...products.slice(0, index), updatedProduct, ...products.slice(index + 1)])
+
+  }
+
+  const deleteProductOnList = (updatedProduct) => {
+    if (!updatedProduct) return
+    const index = products.findIndex(p => p.id == updatedProduct.id)
+    if (index == -1) return
+
+    setProducts([...products.slice(0, index), ...products.slice(index + 1)])
+
+  }
+
+  const addProductOnList = (updatedProduct) => {
+    if (!updatedProduct) return
+    const index = products.findIndex(p => p.id == updatedProduct.id)
+    if (index == -1) return
+
+    setProducts([updatedProduct, ...products])
 
   }
 
@@ -235,11 +257,42 @@ export default function Home({ productsData, participantData }) {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleProductSubmit = async (e, data) => {
+    e.preventDefault();
+
+    // console.log("data to send", data)
+    const { data: newProduct, error } = await supabase
+      .from('Products')
+      .upsert(data)
+      .select('*')
+      .limit(1)
+      .single()
+
+    if (!error) {
+      if (data.id)
+        updateProductOnList(newProduct)
+      else
+        addProductOnList(newProduct)
+
+      setShowProductForm(false)
+    }
+
+  }
+  const handleDelete = async (product) => {
+    await supabase
+      .from("Products")
+      .delete()
+      .eq("id", product.id)
+    deleteProductOnList(product)
+
+  }
+
   useEffect(() => {
     if (participant) setFormData({ ...formData, name: participant.name })
   }, [participant])
 
 
+  if (error) return <p>{error}</p>
 
   return (
     <main
@@ -256,16 +309,49 @@ export default function Home({ productsData, participantData }) {
               <path d="M12 16.99V17M12 7V14M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
+          {false && <div className="absolute top-0 left-0 right-0 bottom-0">
+            <svg fill="#000000" width="40px" height="40px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 74.207 74.207" >
+              <g>
+                <path d="M57.746,14.658h-2.757l-1.021-3.363c-0.965-3.178-3.844-5.313-7.164-5.313H28.801c-3.321,0-6.201,2.135-7.165,5.313
+		l-1.021,3.363h-4.153C7.385,14.658,0,22.043,0,31.121v20.642c0,9.077,7.385,16.462,16.462,16.462h41.283
+		c9.077,0,16.462-7.385,16.462-16.462V31.121C74.208,22.043,66.823,14.658,57.746,14.658z M68.208,51.762
+		c0,5.769-4.693,10.462-10.462,10.462H16.462C10.693,62.223,6,57.53,6,51.762V31.121c0-5.769,4.693-10.462,10.462-10.462h8.603
+		l2.313-7.621c0.192-0.631,0.764-1.055,1.423-1.055h18.003c0.659,0,1.23,0.424,1.423,1.057l2.314,7.619h7.204
+		c5.769,0,10.462,4.693,10.462,10.462L68.208,51.762L68.208,51.762z"/>
+                <path d="M37.228,25.406c-8.844,0-16.04,7.195-16.04,16.04c0,8.844,7.195,16.039,16.04,16.039s16.041-7.195,16.041-16.039
+		C53.269,32.601,46.073,25.406,37.228,25.406z M37.228,51.486c-5.536,0-10.04-4.504-10.04-10.039c0-5.536,4.504-10.04,10.04-10.04
+		c5.537,0,10.041,4.504,10.041,10.04C47.269,46.982,42.765,51.486,37.228,51.486z"/>
+              </g>
+            </svg>
+          </div>}
           <div className="h-2/3 flex items-center justify-center">
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white py-4 text-center">
-              <h1 className="text-5xl font-bold" style={{ fontFamily: "Caveat,Helvetica,Arial,sans-serif" }}>Adrián Alejandro</h1>
-              <p className="text-lg mt-4">Fecha del evento: 28.10.2023</p>
+              <h1 className="text-5xl font-bold" style={{ fontFamily: "Caveat,Helvetica,Arial,sans-serif" }}>{wishlist?.display?.title}</h1>
+              <p className="text-lg mt-4">{`Fecha del evento: ${wishlist?.display?.date}`}</p>
             </div>
           </div>
 
         </header>
         <h1 className="flex items-center justify-center font-semibold mt-8 text-3xl">Lista de regalos</h1>
-        <p className="mt-2 p-4 text-center">Nuestro mayor regalo es compartir este momento tan especial con ustedes. Pero si le quieres dar un obsequio a nuestro bebe acá te dejamos algunas opciones:</p>
+        <p className="mt-2 p-4 text-center">{wishlist?.display?.description}</p>
+
+        {editMode &&
+          <button className="px-4 py-2 text-sm bg-cyan-500 text-white rounded-full shadow-sm mb-4" onClick={() => {
+            setSelectedProduct({
+              name: "",
+              estimated_price: 0,
+              credit_amount: 0,
+              image_url: "",
+              reference_link: "",
+              reserved: false,
+              priority: 0,
+              visible: false,
+              wishlist: wishlist?.id
+            })
+            setShowProductForm(true)
+
+          }}>Agregar nuevo producto</button>}
 
         {products.map(product => (
           <Product key={product.id}
@@ -276,6 +362,7 @@ export default function Home({ productsData, participantData }) {
             estimatedPrice={product.estimated_price}
             creditAmount={product.credit_amount}
             reserved={product.reserved}
+            visible={product.visible}
             onGiftPress={() => {
               sendEvent(EventTrack.EventTypes.GIFT_PRESS, { productId: product.id })
               openModal(product, "complete")
@@ -286,6 +373,14 @@ export default function Home({ productsData, participantData }) {
             }}
             onReferenceLinkPress={() => {
               sendEvent(EventTrack.EventTypes.OPEN_REFERENCE_PRESS, { productId: product.id })
+            }}
+            isEditMode={editMode}
+            onEditPress={() => {
+              setSelectedProduct(product)
+              setShowProductForm(true)
+            }}
+            onDeletePress={() => {
+              handleDelete(product)
             }}
             fetchParticipantsInAProduct={fetchParticipantsInAProduct}
           />
@@ -302,9 +397,22 @@ export default function Home({ productsData, participantData }) {
           </button>
         </div>}
 
-        {showSuccessMessage && < div id="toast-bottom-left" class="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow bottom-5 left-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800" role="alert">
-          <div class="text-sm font-normal">Gracias por tu aporte, te lo agradecemos un monton ❤️</div>
+        {showSuccessMessage && < div id="toast-bottom-left" className="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow bottom-5 left-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800" role="alert">
+          <div className="text-sm font-normal">Gracias por tu aporte, te lo agradecemos un monton ❤️</div>
         </div>}
+
+
+        {editMode && showProductForm &&
+          <ItemFormModal
+            folderName={wishlist?.slug}
+            data={selectedProduct}
+            onSubmit={handleProductSubmit}
+            onClosePress={() => {
+              setShowProductForm(false);
+              setSelectedProduct(null);
+            }}
+            nonEditable={["id"]}
+            nonVisible={["Participants", "wishlist"]} />}
 
       </div>
 
@@ -464,30 +572,65 @@ const fetchParticipantByNotionId = async (participantId) => supabase
   .from('Participants')
   .select('*,ProductParticipants(*)')
   .eq("notion_id", participantId)
+  .limit(1)
+  .single()
 
+const fetchProducts = (wishlist, editMode = false) => {
 
-const fetchProducts = () => supabase
-  .from('Products')
-  .select('*,Participants(id,name)')
-  .eq("visible", true)
-  .order('reserved', { ascending: true })
-  .order('credit_amount', { ascending: false })
-  .order('priority', { ascending: false });
+  let baseQuery = supabase
+    .from('Products')
+    .select('*,Participants(id,name)')
+    .eq("wishlist", wishlist?.id)
+
+  if (!editMode) baseQuery = baseQuery.eq("visible", true)
+
+  return baseQuery
+    .order('reserved', { ascending: true })
+    .order('credit_amount', { ascending: false })
+    .order('priority', { ascending: false });
+}
+const fetchWishlist = (slug) => supabase
+  .from('Wishlists')
+  .select('*')
+  .eq("slug", slug)
+  .limit(1)
+  .single()
 
 
 export async function getServerSideProps(ctx) {
-  const { p: notionId } = ctx.query
-  const { data: dataProducts } = await fetchProducts()
+  const { p: notionId, code } = ctx.query
+  const { slug } = ctx.query
+
+
+  if (!slug) return {
+    props: {
+      error: "Lista invalida"
+    }
+  }
+
+  const { data: wishlist } = await fetchWishlist(slug)
+
+  if (!wishlist) return {
+    props: {
+      error: "Esta lista no existe"
+    }
+  }
+  const editMode = code === wishlist?.edit_code
+
+  const { data: dataProducts } = await fetchProducts(wishlist, editMode)
   let participant = null
   if (notionId) {
     const { data } = await fetchParticipantByNotionId(notionId)
-    if (data?.length) participant = data[0]
+    if (data) participant = data
   }
   // Pass data to the page via props
+
   return {
     props: {
       productsData: dataProducts || null,
-      participantData: participant || null
+      participantData: participant || null,
+      wishlist,
+      editMode
     }
   }
 }

@@ -30,7 +30,7 @@ export const EventTypesDesc = {
     OPEN_PAYMENT_METHODS_PRESS: () => "",
 }
 
-export const send = async (name, participantId, productId, extra = {}) => {
+export const send = async (name, participantId, productId, wishlistId, extra = {}) => {
     const { data, error } = await supabase
         .from('Events')
         .insert(
@@ -38,6 +38,7 @@ export const send = async (name, participantId, productId, extra = {}) => {
                 name,
                 participant: participantId,
                 product: productId,
+                wishlist_id: wishlistId,
                 extra: { ...extra, first_id: localStorage.getItem("first_id") }
             },
         )
