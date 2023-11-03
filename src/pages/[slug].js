@@ -414,9 +414,9 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
               setShowProductForm(false);
               setSelectedProduct(null);
             }}
-            nonEditable={["id", "wishlist"]}
-            nonVisible={["wishlist", "created_at"]}
-            exclude={["Participants"]}
+            nonEditable={["id"]}
+            nonVisible={["Participants", "wishlist", "created_at", "credit_amount"]}
+            exclude={["Participants", "credit_amount"]}
           />}
 
       </div>
