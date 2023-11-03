@@ -337,21 +337,23 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         <p className="mt-2 p-4 text-center">{wishlist?.display?.description}</p>
 
         {editMode &&
-          <button className="px-4 py-2 text-sm bg-cyan-500 text-white rounded-full shadow-sm mb-4" onClick={() => {
-            setSelectedProduct({
-              name: "",
-              estimated_price: 0,
-              credit_amount: 0,
-              image_url: "",
-              reference_link: "",
-              reserved: false,
-              priority: 0,
-              visible: false,
-              wishlist: wishlist?.id
-            })
-            setShowProductForm(true)
+          <div className="flex justify-center mt-10">
+            <button className="px-4 py-2 text-sm bg-cyan-500 text-white rounded-full shadow-sm mb-4" onClick={() => {
+              setSelectedProduct({
+                name: "",
+                estimated_price: 0,
+                credit_amount: 0,
+                image_url: "",
+                reference_link: "",
+                reserved: false,
+                priority: 0,
+                visible: false,
+                wishlist: wishlist?.id
+              })
+              setShowProductForm(true)
 
-          }}>Agregar nuevo producto</button>}
+            }}>Agregar nuevo producto</button>
+          </div>}
 
         {products.map(product => (
           <Product key={product.id}
