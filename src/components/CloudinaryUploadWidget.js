@@ -56,18 +56,17 @@ function CloudinaryUploadWidget({ uwConfig, onSuccess, content }) {
 
   return (
     <CloudinaryScriptContext.Provider value={{ loaded }}>
-      <div className="">
-        <button
-          id="upload_widget"
-          className="bg-gray-300 p-2 rounded m-1 w-full"
-          onClick={initializeCloudinaryWidget}
-          type="button"
-        >
-          ⬆️
-        </button>
-        {content}
 
-      </div>
+      <button
+        id="upload_widget"
+        className="bg-gray-200 p-2 rounded m-2 text-black text-sm"
+        onClick={initializeCloudinaryWidget}
+        type="button"
+      >Subir imagen ⬆️
+      </button>
+
+
+
     </CloudinaryScriptContext.Provider>
   );
 }

@@ -4,7 +4,7 @@ import CloudinaryUploadWidget from './CloudinaryUploadWidget';
 const cloudNameEnv = process.env.NEXT_PUBLIC_CLOUD_NAME;
 const uploadPresetEnv = process.env.NEXT_PUBLIC_UPLOAD_PRESET;
 
-export default function ItemFormModal({ folderName, data = {}, onSubmit, onClosePress, nonEditable = [], nonVisible = [] }) {
+export default function ItemFormModal({ folderName, data = {}, onSubmit, onClosePress, nonEditable = [], nonVisible = [], exclude = [] }) {
 
     const [formData, setFormData] = useState(data);
     const [isLoading, setIsLoading] = useState(false)
@@ -49,7 +49,7 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
         const filtered = {}
 
         Object.keys(data).forEach((key) => {
-            if (!nonVisible.includes(key))
+            if (!exclude.includes(key))
                 filtered[key] = formData[key];
         })
 
@@ -59,7 +59,7 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
         setIsLoading(false)
 
     }
-    console.log({ formData })
+
     return <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
 
         <div className="bg-white p-5 rounded shadow-lg overflow-y-scroll ">
@@ -77,9 +77,9 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
                             <CloudinaryUploadWidget uwConfig={uwConfig} onSuccess={(url) => {
                                 setFormData({ ...formData, [key]: url })
                             }} />
-                            <div className="">
-                                <img className="h-32 w-full object-contain" src={formData[key] || "https://placehold.co/800x400"} alt="Modern building architecture" />
-                            </div>
+
+                            <img className="h-24 w-full object-contain" src={formData[key] || "https://placehold.co/800x400"} alt="Modern building architecture" />
+
 
 
                         </div>

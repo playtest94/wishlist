@@ -137,8 +137,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
   const addProductOnList = (updatedProduct) => {
     if (!updatedProduct) return
-    const index = products.findIndex(p => p.id == updatedProduct.id)
-    if (index == -1) return
+
 
     setProducts([updatedProduct, ...products])
 
@@ -276,7 +275,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
       setShowProductForm(false)
     }
-    console.log(error)
+    console.log(newProduct, error)
 
   }
   const handleDelete = async (product) => {
@@ -415,8 +414,10 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
               setShowProductForm(false);
               setSelectedProduct(null);
             }}
-            nonEditable={["id"]}
-            nonVisible={["Participants", "wishlist"]} />}
+            nonEditable={["id", "wishlist"]}
+            nonVisible={["wishlist", "created_at"]}
+            exclude={["Participants"]}
+          />}
 
       </div>
 
