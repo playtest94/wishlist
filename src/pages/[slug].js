@@ -260,7 +260,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
   const handleProductSubmit = async (e, data) => {
     e.preventDefault();
 
-    // console.log("data to send", data)
+    console.log("data to send", data)
     const { data: newProduct, error } = await supabase
       .from('Products')
       .upsert(data)
@@ -276,14 +276,16 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
       setShowProductForm(false)
     }
+    console.log(error)
 
   }
   const handleDelete = async (product) => {
-    await supabase
+    const res = await supabase
       .from("Products")
       .delete()
       .eq("id", product.id)
     deleteProductOnList(product)
+    console.log(res)
 
   }
 
