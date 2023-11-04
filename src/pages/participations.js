@@ -165,7 +165,7 @@ export default function Participations({ participationData }) {
                   Monto
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Es Abono?
+                  Reservado
                 </th>
                 <th scope="col" className="px-6 py-3">
                   -
@@ -192,7 +192,7 @@ export default function Participations({ participationData }) {
                     {amount}
                   </td>
                   <td className="px-6 py-4">
-                    {isCredit ? "SI" : "NO"}
+                    {`${product.completed ? " - ✅" : ""}`}
                   </td>
                   <td className="px-6 py-4">
                     <button type="button" className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gray-500 hover:bg-gray-400" onClick={() => setDetailData(participation)}>
