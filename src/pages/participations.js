@@ -176,10 +176,11 @@ export default function Participations({ participationData }) {
               {participations.filter(p => !p.is_credit).map((participation) => {
                 const {
                   id,
-                  is_credit: isCredit,
+                  completed,
                   amount,
                   Products: product,
                   Participants: participant } = participation
+                  console.log(product)
 
                 return <tr key={id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -192,7 +193,7 @@ export default function Participations({ participationData }) {
                     {amount}
                   </td>
                   <td className="px-6 py-4">
-                    {`${product.completed ? " - ✅" : ""}`}
+                    {`${completed ? " ✅" : ""}`}
                   </td>
                   <td className="px-6 py-4">
                     <button type="button" className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gray-500 hover:bg-gray-400" onClick={() => setDetailData(participation)}>
