@@ -301,7 +301,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     >
       <div className="md:container md:mx-auto pt-10 pb-10">
 
-        <header className="relative bg-cover bg-center bg-opacity-50 bg-blue-500 h-96 md:max-w-2xl mx-auto " style={{ backgroundImage: 'url("https://res.cloudinary.com/dzbdfh66n/image/upload/v1697052496/wishlist/cusnrvwyvkomval5lhwj.png")' }}>
+        <header className="relative bg-cover bg-center bg-opacity-50 bg-blue-500 h-96 md:max-w-2xl mx-auto " style={{ backgroundImage: `url('${wishlist?.display?.cover_photo_url}')` }}>
           <button className="w-10 h-10 absolute top-2 right-2 hover:bg-white-200 bg-black rounded bg-opacity-70 active:bg-gray-500 active:bg-opacity-50" onClick={() => {
             sendEvent(EventTrack.EventTypes.OPEN_ACLARATIONS_PRESS)
             setModalIndicationOpen(true)
