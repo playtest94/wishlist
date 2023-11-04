@@ -44,7 +44,7 @@ export default function ReferencesModal({ references: initialRefs = [], isEditMo
                     <div key={`${ref.name}-${i}`} className="flex row gap-4">
 
                         <label className="text-black">{`${ref.name}:`}</label>
-                        <a href={ref.link_url} className="block text-m leading-tight font-medium text-black underline" target="_blank" onClick={null}>Visitar</a>
+                        <a href={ref.link_url} className="block text-m font-medium text-black underline" target="_blank" onClick={null}>Visitar</a>
                         {isEditMode && <button className="px-1 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => removeRef(i)}>➖</button>}
                     </div>)}
             </div>
