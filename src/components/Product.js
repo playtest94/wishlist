@@ -34,7 +34,7 @@ export default function Product({
             </div>
             <div className="p-8 w-full pr-10">
                 <div className="uppercase tracking-wide text-l text-indigo-500 font-semibold">{name}</div>
-                <a href={referenceLink} className="block text-m leading-tight font-medium text-black underline" target="_blank" onClick={onReferenceLinkPress}>Ver referencia y tienda</a>
+                <a href={referenceLink} className="block text-m leading-tight font-medium text-black underline" target="_blank" onClick={onReferenceLinkPress}>Donde conseguirlo</a>
 
 
                 {reserved && <div className="tracking-wide text-sm text-black font-semibold mt-2">{`RESERVADO`}</div>}
