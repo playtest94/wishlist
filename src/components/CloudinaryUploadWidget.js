@@ -7,6 +7,7 @@ const CloudinaryScriptContext = createContext();
 
 function CloudinaryUploadWidget({ uwConfig, onSuccess, content }) {
   const [loaded, setLoaded] = useState(false);
+  const windowRef = window.cloudinary
 
   useEffect(() => {
     // Check if the script is already loaded
@@ -25,27 +26,35 @@ function CloudinaryUploadWidget({ uwConfig, onSuccess, content }) {
       } else {
         // If already loaded, update the state
         setLoaded(true);
-        myWidget = window.cloudinary.createUploadWidget(
-          uwConfig,
-          (error, result) => {
-            if (!error && result && result.event === "success") {
-              // console.log("Done! Here is the image info: ", result.info);
-              onSuccess(result.info.secure_url);
 
-            }
-          }
-        );
       }
     }
   }, [loaded]);
 
+
+  useEffect(() => {
+    return () => myWidget = null
+  }, [])
   return (
     <CloudinaryScriptContext.Provider value={{ loaded }}>
 
       <button
         id="upload_widget"
         className="bg-gray-200 p-2 rounded m-2 text-black text-sm"
-        onClick={() => myWidget.open()}
+        onClick={() => {
+          if (!myWidget) {
+            myWidget = window.cloudinary.createUploadWidget(
+              uwConfig,
+              (error, result) => {
+                if (!error && result && result.event === "success") {
+                  // console.log("Done! Here is the image info: ", result.info);
+                  onSuccess(result.info.secure_url);
+                }
+              }
+            );
+          }
+          myWidget.open()
+        }}
         type="button"
       >Subir imagen ⬆️
       </button>
