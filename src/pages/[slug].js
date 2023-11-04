@@ -11,6 +11,7 @@ import * as EventTrack from "@/helpers/events"
 import supabase from "@/helpers/supabase-client"
 
 import ItemFormModal from '@/components/ItemFormModal';
+import ReferencesModal from '@/components/ReferencesModal';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,6 +28,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
   const [productParticipants, setProductParticipants] = useState([]);
   const [showParticipants, setShowParticipants] = useState(false)
   const [showProductForm, setShowProductForm] = useState(false)
+  const [references, setReferences] = useState(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [modalType, setModalType] = useState();
 
@@ -53,6 +55,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     !editMode && EventTrack.send(name, participantId, productId, wishlist.id, extra)
 
   useEffect(() => {
+    if (error) return
     const itemKey = "first_open3"
     const isFirstTime = localStorage.getItem(itemKey)
     if (isFirstTime == null) {
@@ -288,12 +291,32 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
   }
 
+  const handleCloseReferences = async (newReferences = [], productId) => {
+    debugger
+    if (editMode) {
+      const { data: productUpdated, error: productUpdateError } = await supabase
+        .from('Products')
+        .update({
+          references: newReferences,
+        })
+        .eq('id', productId)
+        .select("*")
+       
+
+      console.log("UPDATE", productUpdated[0], productUpdateError)
+      updateProductOnList(productUpdated[0])
+
+    }
+    setReferences(undefined)
+  }
+
   useEffect(() => {
     if (participant) setFormData({ ...formData, name: participant.name })
   }, [participant])
 
 
   if (error) return <p>{error}</p>
+
 
   return (
     <main
@@ -356,8 +379,8 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
             }}>Agregar nuevo producto</button>
           </div>}
 
-        {products.map(product => (
-          <Product key={product.id}
+        {products.map(product => {
+          return <Product key={product.id}
             id={product.id}
             name={product.name}
             imageUrl={product.image_url}
@@ -375,6 +398,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
               openModal(product, "credit")
             }}
             onReferenceLinkPress={() => {
+              setReferences({ data: product?.references, productId: product.id })
               sendEvent(EventTrack.EventTypes.OPEN_REFERENCE_PRESS, { productId: product.id })
             }}
             isEditMode={editMode}
@@ -387,7 +411,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
             }}
             fetchParticipantsInAProduct={fetchParticipantsInAProduct}
           />
-        ))}
+        })}
 
         {participant && <div className="fixed left-4 top-4 bg-black bg-opacity-50 rounded p-5">{`¡Gracias ${participant?.name}! ❤️`}</div>}
 
@@ -568,6 +592,14 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
           exclude={["Participants", "credit_amount", "reserved", "references"]}
         />}
 
+      {(references?.data === null || references?.data) &&
+        <ReferencesModal
+          isEditMode={editMode}
+          references={references?.data || []}
+          onClose={(data) => handleCloseReferences(data, references?.productId)}
+        />}
+
+
       {showConffeti && <Confetti />}
 
     </main >
@@ -616,7 +648,7 @@ export async function getServerSideProps(ctx) {
   }
 
   const { data: wishlist } = await fetchWishlist(slug)
-
+  console.log(wishlist)
   if (!wishlist) return {
     props: {
       error: "Esta lista no existe"
