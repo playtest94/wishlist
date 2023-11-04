@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 
+var myWidget
 
 // Create a context to manage the script loading state
 const CloudinaryScriptContext = createContext();
@@ -24,35 +25,19 @@ function CloudinaryUploadWidget({ uwConfig, onSuccess, content }) {
       } else {
         // If already loaded, update the state
         setLoaded(true);
+        myWidget = window.cloudinary.createUploadWidget(
+          uwConfig,
+          (error, result) => {
+            if (!error && result && result.event === "success") {
+              // console.log("Done! Here is the image info: ", result.info);
+              onSuccess(result.info.secure_url);
+
+            }
+          }
+        );
       }
     }
   }, [loaded]);
-
-  const initializeCloudinaryWidget = () => {
-    if (loaded) {
-      var myWidget = window.cloudinary.createUploadWidget(
-        uwConfig,
-        (error, result) => {
-          if (!error && result && result.event === "success") {
-            // console.log("Done! Here is the image info: ", result.info);
-            onSuccess(result.info.secure_url);
-
-          }
-        }
-      );
-
-      document.getElementById("upload_widget").addEventListener(
-        "click",
-        function () {
-          myWidget.open();
-
-        },
-        false
-      );
-
-      myWidget.open();
-    }
-  };
 
   return (
     <CloudinaryScriptContext.Provider value={{ loaded }}>
@@ -60,7 +45,7 @@ function CloudinaryUploadWidget({ uwConfig, onSuccess, content }) {
       <button
         id="upload_widget"
         className="bg-gray-200 p-2 rounded m-2 text-black text-sm"
-        onClick={initializeCloudinaryWidget}
+        onClick={() => myWidget.open()}
         type="button"
       >Subir imagen ⬆️
       </button>
