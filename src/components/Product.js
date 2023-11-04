@@ -30,7 +30,7 @@ export default function Product({
     return <div key={id} className={`max-w-md mx-auto bg-white ${visible ? 'opacity-100' : 'opacity-60'} rounded-xl shadow-md overflow-hidden md:max-w-xl mt-10`}>
         <div className="md:flex">
             <div className="md:shrink-0">
-                <img className="h-48 w-full object-contain md:h-full md:w-48" src={imageUrl || "https://placehold.co/800x400"} alt="Modern building architecture" />
+                <img className="h-48 w-full object-contain md:h-48 md:w-48" src={imageUrl || "https://placehold.co/800x400"} alt="Modern building architecture" />
             </div>
             <div className="p-8 w-full pr-10">
                 <div className="uppercase tracking-wide text-l text-indigo-500 font-semibold">{name}</div>

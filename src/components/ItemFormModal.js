@@ -62,7 +62,7 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
 
     return <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
 
-        <div className="bg-white p-5 w-100 rounded shadow-lg max-h-full overflow-y-scroll max-md:min-w-full m-x:10	">
+        <div className="bg-white p-5 w-100 rounded shadow-lg max-h-full overflow-y-scroll max-md:min-w-full md:w-8/12 m-x:10">
             <form onSubmit={handleSubmit} >
 
                 {Object.keys(formData).map(key => {
@@ -77,7 +77,7 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
                                 setFormData({ ...formData, [key]: url })
                             }} />
 
-                            <img className="h-24 w-full object-contain" src={formData[key] || "https://placehold.co/800x400"} alt="Modern building architecture" />
+                            <img className="h-48 w-48 object-contain" src={formData[key] || "https://placehold.co/800x400"} alt="Modern building architecture" />
 
 
 
