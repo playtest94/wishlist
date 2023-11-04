@@ -564,8 +564,8 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
             setSelectedProduct(null);
           }}
           nonEditable={["id"]}
-          nonVisible={["Participants", "wishlist", "created_at", "credit_amount"]}
-          exclude={["Participants", "credit_amount"]}
+          nonVisible={["Participants", "wishlist", "created_at", "credit_amount", "reserved"]}
+          exclude={["Participants", "credit_amount, reserved"]}
         />}
 
       {showConffeti && <Confetti />}
