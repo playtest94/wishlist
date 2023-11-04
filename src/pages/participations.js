@@ -165,7 +165,7 @@ export default function Participations({ participationData }) {
                   Monto
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Reservado
+                  Completado
                 </th>
                 <th scope="col" className="px-6 py-3">
                   -
