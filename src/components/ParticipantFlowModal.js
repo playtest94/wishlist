@@ -197,7 +197,7 @@ export default function ParticipantFlowModal({ folderName, product, participant,
 
     return <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
 
-        <div className="bg-white p-10 w-100 roundedshadow-lg lg:w-16/8 overflow-y-scroll max-md:min-w-full flex flex-col flex-wrap content-center">
+        <div className="bg-white p-10 md:w-1/3 lg:w-1/4 roundedshadow-lg overflow-y-scroll max-sm:min-w-full flex flex-col flex-wrap content-center">
             <div className="flex row justify-end mb-4" style={{ marginRight: -10 }}>
                 <button type="button" className="px-4 py-2 font-semibold  text-sm shadow rounded-md text-black hover:bg-gray-400" onClick={() => onClose()}>
                     X
