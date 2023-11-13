@@ -176,7 +176,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         const { data: participantCreated, error } = await supabase
           .from('Participants')
           .insert([
-            { name: participantName },
+            { name: participantName, wishlist },
           ])
           .select()
         if (error) throw error
