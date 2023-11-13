@@ -424,70 +424,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
       </div>
 
 
-      {/* {
-        false && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-            <div className="bg-white p-4 w-80 rounded shadow-lg">
-              <h2 className="text-xl font-bold mb-4 text-black">{selectedProduct.name}</h2>
-
-              {Boolean(selectedProduct.Participants.length) && <div>
-
-                {!showParticipants && <button className="px-4 py-2 text-sm bg-cyan-500 text-white rounded-full shadow-sm mb-4" onClick={() => {
-                  handleFetchParticipantsInAProduct(selectedProduct.id)
-                  setShowParticipants(true)
-                }}>Ver participantes</button>}
-                {showParticipants && <button className="px-4 py-2 text-sm bg-cyan-500 text-white rounded-full shadow-sm mb-2" onClick={() => setShowParticipants(false)}>Ocultar participantes</button>}
-                {showParticipants && <div className="mb-6">
-                  {productParticipants.map(participant => <div key={participant.id} className="grid grid-cols-2 gap-4">
-                    <div className="text-black text-sm">{participant.Participants.name}</div>
-                    <div className="text-black text-sm">{participant.amount === null ? "-" : `${participant.amount} USD`}</div>
-                  </div>)}
-                </div>}
-              </div>}
-              {modalType == "complete" && <p className="text-black text-xs mb-2">Te encargaras de la compra del regalo, si no es asi puedes utilizar la opcion de abonar y nosotros nos encargamos ❤️</p>}
-              {modalType == "credit" && <p className="text-black text-xs mb-2">Haras el pago a algunas de nuestras cuentas para reunir el monto total y poder comprar el producto ❤️</p>}
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">A nombre de:</label>
-                  <input
-                    disabled={participant}
-                    required
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded text-black" />
-                </div>
-                {modalType == "credit" && <div className="mb-4">
-                  <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Monto:</label>
-                  <input
-                    required={modalType == "credit"}
-                    type="number"
-                    id="amount"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded text-black" />
-                </div>}
-                <div className="text-right">
-                  <button type="submit" className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-indigo-500 hover:bg-indigo-400 transition ease-in-out duration-150 disabled:cursor-not-allowed" disabled={isLoading}>
-                    {isLoading && <svg className="animate-spin mr-2 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>}
-                    {isLoading ? "Guardando..." : "Guardar"}
-                  </button>
-                  <button type="button" className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gray-500 hover:bg-gray-400 ml-2" onClick={closeModal}>
-                    Cerrar
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )
-      } */}
-
       {
         isModalIndicationOpen && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
@@ -607,10 +543,10 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 }
 
 
-const fetchParticipantByNotionId = async (participantId) => supabase
+const fetchParticipantByNotionIdOrSlug = async (participantId) => supabase
   .from('Participants')
   .select('*,ProductParticipants(*)')
-  .eq("notion_id", participantId)
+  .or(`notion_id.eq.${participantId},slug.id.${participantId}`)
   .limit(1)
   .single()
 
@@ -637,7 +573,7 @@ const fetchWishlist = (slug) => supabase
 
 
 export async function getServerSideProps(ctx) {
-  const { p: notionId, code } = ctx.query
+  const { p: participantId, code } = ctx.query
   const { slug } = ctx.query
 
 
@@ -658,8 +594,8 @@ export async function getServerSideProps(ctx) {
 
   const { data: dataProducts } = await fetchProducts(wishlist, editMode)
   let participant = null
-  if (notionId) {
-    const { data } = await fetchParticipantByNotionId(notionId)
+  if (participantId) {
+    const { data } = await fetchParticipantByNotionIdOrSlug(participantId)
     if (data) participant = data
   }
   // Pass data to the page via props
