@@ -5,7 +5,7 @@ var myWidget
 // Create a context to manage the script loading state
 const CloudinaryScriptContext = createContext();
 
-function CloudinaryUploadWidget({ uwConfig, onSuccess, content }) {
+function CloudinaryUploadWidget({ uwConfig, onSuccess, buttonText = "Subir imagen ⬆️" }) {
   const [loaded, setLoaded] = useState(false);
   const windowRef = window.cloudinary
 
@@ -56,7 +56,7 @@ function CloudinaryUploadWidget({ uwConfig, onSuccess, content }) {
           myWidget.open()
         }}
         type="button"
-      >Subir imagen ⬆️
+      >{buttonText}
       </button>
 
 

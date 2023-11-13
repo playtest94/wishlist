@@ -79,8 +79,6 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
 
                             <img className="h-48 w-48 object-contain" src={formData[key] || "https://placehold.co/800x400"} alt="Modern building architecture" />
 
-
-
                         </div>
                     }
                     if (formData[key] && typeof (formData[key]) === "object" && formData[key].name) {

@@ -12,6 +12,7 @@ import supabase from "@/helpers/supabase-client"
 
 import ItemFormModal from '@/components/ItemFormModal';
 import ReferencesModal from '@/components/ReferencesModal';
+import ParticipantFlowModal from '@/components/ParticipantFlowModal';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -149,8 +150,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
   const openModal = (product, type) => {
     setIsModalOpen(true);
     setSelectedProduct(product)
-    setModalType(type)
-    if (type === 'complete') setFormData({ ...formData, amount: product.estimated_price || '' })
+    // if (type === 'complete') setFormData({ ...formData, amount: product.estimated_price || '' })
   };
 
   const closeModal = () => {
@@ -158,21 +158,14 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     setSelectedProduct(null);
     setProductParticipants([])
     setShowParticipants(false)
-    setFormData({ ...formData, amount: "" })
+    // setFormData({ ...formData, amount: "" })
   };
 
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async ({ isCredit, participantName, amount, voucherUrl }) => {
 
-    const isCredit = modalType == "credit"
     const productHasEstimatedPrice = selectedProduct.estimated_price !== null
-    if (formData.name.trim() === '' || (isCredit && formData.amount.trim() === '')) {
-      // Realiza una validación para campos vacíos
-      alert('Por favor, complete todos los campos.');
-      return;
-    }
 
     // return
     // Si no hay campos vacíos, puedes enviar los datos al endpoint.
@@ -183,7 +176,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         const { data: participantCreated, error } = await supabase
           .from('Participants')
           .insert([
-            { name: formData.name },
+            { name: participantName },
           ])
           .select()
         if (error) throw error
@@ -202,15 +195,16 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
       const previus = previusApplies.length ? {
         id: previusApplies[0].id,
-        amount: previusApplies[0].amount + parseInt(formData.amount)
-      } : { amount: formData.amount }
+        amount: previusApplies[0].amount + parseInt(amount)
+      } : { amount }
 
       const dataToSend = {
         id: previus?.id,
         product_id: selectedProduct.id,
         participant_id: pId,
         amount: isCredit ? previus.amount : selectedProduct.estimated_price,
-        is_credit: isCredit
+        is_credit: isCredit,
+        voucher_url: voucherUrl
       }
       const { data: productParticipants, error: productParticipantsError } = await supabase
         .from('ProductParticipants')
@@ -220,7 +214,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
       if (productParticipantsError) throw productParticipantsError
 
 
-      const newCreditAmount = productHasEstimatedPrice ? selectedProduct.credit_amount + parseInt(formData.amount || selectedProduct.estimatedPrice) : productParticipants[0].amount
+      const newCreditAmount = productHasEstimatedPrice ? selectedProduct.credit_amount + parseInt(amount || selectedProduct.estimatedPrice) : productParticipants[0].amount
 
       const { data: productUpdated, error: productUpdateError } = await supabase
         .from('Products')
@@ -239,13 +233,12 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
           .eq("id", productParticipants[0].id)
         throw productUpdateError
       }
-
+      closeModal()
       updateProductOnList(productUpdated[0])
-      setFormData({ ...formData, amount: "" })
       fetchParticipantById(pId)
       setShowSuccessMessage(true)
       setShowConffeti(true)
-      closeModal()
+
     } catch (error) {
       console.log("throw error", error)
       alert('Hubo un error al enviar los datos');
@@ -301,7 +294,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         })
         .eq('id', productId)
         .select("*")
-       
+
 
       console.log("UPDATE", productUpdated[0], productUpdateError)
       updateProductOnList(productUpdated[0])
@@ -310,9 +303,9 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     setReferences(undefined)
   }
 
-  useEffect(() => {
-    if (participant) setFormData({ ...formData, name: participant.name })
-  }, [participant])
+  // useEffect(() => {
+  //   if (participant) setFormData({ ...formData, name: participant.name })
+  // }, [participant])
 
 
   if (error) return <p>{error}</p>
@@ -389,14 +382,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
             creditAmount={product.credit_amount}
             reserved={product.reserved}
             visible={product.visible}
-            onGiftPress={() => {
-              sendEvent(EventTrack.EventTypes.GIFT_PRESS, { productId: product.id })
-              openModal(product, "complete")
-            }}
-            onCreditPress={() => {
-              sendEvent(EventTrack.EventTypes.CREDIT_PRESS, { productId: product.id })
-              openModal(product, "credit")
-            }}
+
             onReferenceLinkPress={() => {
               setReferences({ data: product?.references, productId: product.id })
               sendEvent(EventTrack.EventTypes.OPEN_REFERENCE_PRESS, { productId: product.id })
@@ -410,12 +396,16 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
               handleDelete(product)
             }}
             fetchParticipantsInAProduct={fetchParticipantsInAProduct}
+
+            onParticipatePress={() => {
+              openModal(product, "complete")
+            }}
           />
         })}
 
         {participant && <div className="fixed left-4 top-4 bg-black bg-opacity-50 rounded p-5">{`¡Gracias ${participant?.name}! ❤️`}</div>}
 
-        {totalAmount > 0 && <div className="fixed right-10 bottom-12">
+        {false && totalAmount > 0 && <div className="fixed right-10 bottom-12">
           <button className="animate-bounce bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => {
             sendEvent(EventTrack.EventTypes.OPEN_PAYMENT_METHODS_PRESS)
             setModalPaymentOpen(true)
@@ -434,8 +424,8 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
       </div>
 
 
-      {
-        isModalOpen && selectedProduct && (
+      {/* {
+        false && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
             <div className="bg-white p-4 w-80 rounded shadow-lg">
               <h2 className="text-xl font-bold mb-4 text-black">{selectedProduct.name}</h2>
@@ -496,7 +486,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
             </div>
           </div>
         )
-      }
+      } */}
 
       {
         isModalIndicationOpen && (
@@ -599,6 +589,16 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
           onClose={(data) => handleCloseReferences(data, references?.productId)}
         />}
 
+
+
+      {isModalOpen && selectedProduct &&
+        <ParticipantFlowModal
+          folderName={wishlist?.slug}
+          product={selectedProduct}
+          onClose={closeModal}
+          participant={participant}
+          onFinish={handleSubmit}
+        />}
 
       {showConffeti && <Confetti />}
 
