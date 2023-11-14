@@ -151,7 +151,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
   const openModal = (product, type) => {
     setIsModalOpen(true);
     setSelectedProduct(product)
-    // if (type === 'complete') setFormData({ ...formData, amount: product.estimated_price || '' })
   };
 
   const closeModal = () => {
@@ -159,17 +158,12 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     setSelectedProduct(null);
     setProductParticipants([])
     setShowParticipants(false)
-    // setFormData({ ...formData, amount: "" })
   };
-
-
 
   const handleSubmit = async ({ isCredit, participantName, amount, voucherUrl }) => {
 
     const productHasEstimatedPrice = selectedProduct.estimated_price !== null
 
-    // return
-    // Si no hay campos vacíos, puedes enviar los datos al endpoint.
     try {
       setIsLoading(true)
       let pId = participant?.id
@@ -177,7 +171,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         const { data: participantCreated, error } = await supabase
           .from('Participants')
           .insert([
-            { name: participantName, wishlist },
+            { name: participantName, wishlist: wishlist.id },
           ])
           .select()
         if (error) throw error
@@ -240,6 +234,8 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
       setShowSuccessMessage(true)
       setShowConffeti(true)
 
+      sendEvent(isCredit ? EventTrack.EventTypes.FINISH_CREDIT : EventTrack.EventTypes.FINISH_GIFT, { productId: selectedProduct?.id, participantId: pId, extra: { amount } },)
+
     } catch (error) {
       console.log("throw error", error)
       alert('Hubo un error al enviar los datos');
@@ -272,7 +268,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
       setShowProductForm(false)
     }
-    console.log(newProduct, error)
 
   }
   const handleDelete = async (product) => {
@@ -286,7 +281,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
   }
 
   const handleCloseReferences = async (newReferences = [], productId) => {
-    debugger
     if (editMode) {
       const { data: productUpdated, error: productUpdateError } = await supabase
         .from('Products')
@@ -386,7 +380,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
             onReferenceLinkPress={() => {
               setReferences({ data: product?.references, productId: product.id })
-              sendEvent(EventTrack.EventTypes.OPEN_REFERENCE_PRESS, { productId: product.id })
+              sendEvent(EventTrack.EventTypes.OPEN_REFERENCES_LIST_PRESS, { productId: product.id })
             }}
             isEditMode={editMode}
             onEditPress={() => {
@@ -420,10 +414,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         </div>}
 
 
-
-
       </div>
-
 
       {
         isModalIndicationOpen && (
@@ -521,6 +512,9 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
       {(references?.data === null || references?.data) &&
         <ReferencesModal
+          onVisitPress={() => {
+            sendEvent(EventTrack.EventTypes.OPEN_REFERENCE_PRESS, { productId: references?.productId })
+          }}
           isEditMode={editMode}
           references={references?.data || []}
           onClose={(data) => handleCloseReferences(data, references?.productId)}
@@ -544,11 +538,12 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 }
 
 
-const fetchParticipantByNotionIdOrSlug = async (participantId) => {
+const fetchParticipantByNotionIdOrSlug = async (participantId, wishlist) => {
   const isUuid = checkIfValidUUID(participantId)
   const base = supabase
     .from('Participants')
     .select('*,ProductParticipants(*)')
+    .eq("wishlist", wishlist)
 
   if (isUuid) base.eq("notion_id", participantId)
   if (!isUuid) base.eq("slug", participantId)
@@ -602,9 +597,11 @@ export async function getServerSideProps(ctx) {
   const { data: dataProducts } = await fetchProducts(wishlist, editMode)
   let participant = null
   if (participantId) {
-    const { data } = await fetchParticipantByNotionIdOrSlug(participantId)
+    const { data, error } = await fetchParticipantByNotionIdOrSlug(participantId, wishlist)
+    console.log(participantId, data, error)
     if (data) participant = data
   }
+
   // Pass data to the page via props
 
   return {

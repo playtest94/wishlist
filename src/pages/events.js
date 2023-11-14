@@ -124,7 +124,7 @@ export default function Events({ eventsData }) {
                                         const options = { hour: "2-digit", minute: "2-digit" };
                                         const time = new Intl.DateTimeFormat('es-ES', options).format(new Date(event.created_at))
                                         const title = EventTrack.EventTypesTitles[event.name]
-                                        const desc = EventTrack.EventTypesDesc[event.name](event.Products?.name)
+                                        const desc = EventTrack.EventTypesDesc[event.name](event.Products?.name, event.extra)
                                         return <li key={event.id} className="mb-10 ml-4">
                                             <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
                                             <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{time}</time>

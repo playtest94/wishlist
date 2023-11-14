@@ -14,9 +14,9 @@ export default function ParticipantFlowModal({ folderName, product, participant,
     const [uwConfig] = useState({
         cloudName,
         uploadPreset,
+        sources: ["local"], // restrict the upload sources to URL and local files
         multiple: false,  //restrict upload to a single file
         folder: folderName, //upload files to the specified folder
-        clientAllowedFormats: [".png", "jpeg"], //restrict uploading to image files only
     });
 
 
