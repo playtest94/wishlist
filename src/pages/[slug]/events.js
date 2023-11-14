@@ -68,6 +68,9 @@ export default function Events({ eventsData }) {
         return groupedByParticipants
     }, [events])
 
+
+
+
     return (
         <>
             <main
@@ -152,15 +155,26 @@ export default function Events({ eventsData }) {
 }
 
 
-const fetchEvents = () => supabase
+const fetchWishlist = (slug) => supabase
+    .from('Wishlists')
+    .select('*')
+    .eq("slug", slug)
+    .limit(1)
+    .single()
+
+const fetchEventsByWishlist = (wishlistId) => supabase
     .from('Events')
     .select('*,Participants(id,name), Products(id,name)')
-    .order('created_at', { ascending: false })
+    .eq("wishlist_id", wishlistId)
+    .order('created_at', { ascending: false })   
 
 
 export async function getServerSideProps(ctx) {
-    const { data: dataEvents, error } = await fetchEvents()
+    const { slug } = ctx.query
 
+    const { data: wishlist } = await fetchWishlist(slug)
+    console.log("here", wishlist)
+    const { data: dataEvents, error } = await fetchEventsByWishlist(wishlist?.id)
     // dataEvents.length && console.log(dataEvents[0])
     // Pass data to the page via props
     return {

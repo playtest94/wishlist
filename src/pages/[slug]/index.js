@@ -197,7 +197,8 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         amount: isCredit ? previus.amount : selectedProduct.estimated_price,
         is_credit: isCredit,
         voucher_url: voucherUrl,
-        payment_method: paymentMethod
+        payment_method: paymentMethod,
+        wishlist: wishlist?.id
       }
       const { data: productParticipants, error: productParticipantsError } = await supabase
         .from('ProductParticipants')
@@ -578,9 +579,7 @@ const fetchWishlist = (slug) => supabase
 
 
 export async function getServerSideProps(ctx) {
-  const { p: participantId, code } = ctx.query
-  const { slug } = ctx.query
-
+  const { p: participantId, code, slug } = ctx.query
 
   if (!slug) return {
     props: {
