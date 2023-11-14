@@ -120,7 +120,6 @@ export default function Participations({ participationData }) {
                   Products: product = {},
                   Participants: participant } = participation
 
-                if (participation.id == 14) console.log("ERROR", product)
 
                 return <tr key={id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -182,7 +181,6 @@ export default function Participations({ participationData }) {
                   amount,
                   Products: product = {},
                   Participants: participant } = participation
-                console.log("product", product)
 
                 return <tr key={id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -297,7 +295,6 @@ export async function getServerSideProps(ctx) {
   const { data: participationData, error } = await fetchProductParticipations(wishlist?.id)
 
   // console.log({ error })
-  console.log("participationData", participationData)
   const sorted = participationData?.sort((a, b) => {
     if (a.Participants.name.toLowerCase() < b.Participants.name.toLowerCase()) return -1
     if (a.Participants.name.toLowerCase() > b.Participants.name.toLowerCase()) return 1
@@ -305,7 +302,6 @@ export async function getServerSideProps(ctx) {
     return 0
 
   })
-  console.log("participationData[0]", participationData[0])
   // Pass data to the page via props
   return {
     props: {

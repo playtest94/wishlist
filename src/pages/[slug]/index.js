@@ -288,7 +288,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         .select("*")
 
 
-      console.log("UPDATE", productUpdated[0], productUpdateError)
       updateProductOnList(productUpdated[0])
 
     }
@@ -296,7 +295,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
   }
 
   const handleChangeStep = (step) => {
-    console.log("handleChangeStep", step)
     sendEvent(EventTrack.EventTypes.STEP_MOVE, { productId: selectedProduct?.id, extra: { step } })
   }
 
@@ -599,7 +597,6 @@ export async function getServerSideProps(ctx) {
   let participant = null
   if (participantId) {
     const { data, error } = await fetchParticipantByNotionIdOrSlug(participantId, wishlist)
-    console.log(participantId, data, error)
     if (data) participant = data
   }
 

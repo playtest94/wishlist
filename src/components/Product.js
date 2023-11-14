@@ -24,7 +24,6 @@ export default function Product({
 
     const handleFetchParticipantsInAProduct = async (productId) => {
         const { data, error } = await fetchParticipantsInAProduct(productId)
-        console.log(data)
         if (!error) setProductParticipants(data)
     };
 

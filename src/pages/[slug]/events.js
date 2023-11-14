@@ -173,7 +173,6 @@ export async function getServerSideProps(ctx) {
     const { slug } = ctx.query
 
     const { data: wishlist } = await fetchWishlist(slug)
-    console.log("here", wishlist)
     const { data: dataEvents, error } = await fetchEventsByWishlist(wishlist?.id)
     // dataEvents.length && console.log(dataEvents[0])
     // Pass data to the page via props

@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 
 export default function ReferencesModal({ references: initialRefs = [], isEditMode, onClose }) {
-    console.log(initialRefs)
     const [references, setReferences] = useState(initialRefs)
     const [formData, setFormData] = useState({ name: "", value: "" })
 
@@ -13,7 +12,6 @@ export default function ReferencesModal({ references: initialRefs = [], isEditMo
 
     const onSubmit = (e) => {
         e.preventDefault();
-        console.log({ formData })
         if (formData.name.trim() === '' || formData.value.trim() === '') {
             // Realiza una validación para campos vacíos
             alert('Por favor, complete todos los campos.');
