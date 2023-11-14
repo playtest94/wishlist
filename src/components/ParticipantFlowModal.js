@@ -147,6 +147,7 @@ export default function ParticipantFlowModal({ folderName, product, participant,
                 <div className="mb-4">
                     <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Monto a abonar (puedes cambiarlo):</label>
                     <input
+                        placeholder={product?.estimated_price - product?.credit_amount}
                         required={true}
                         type="number"
                         id="amount"
