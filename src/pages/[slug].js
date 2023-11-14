@@ -58,12 +58,13 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
   useEffect(() => {
     if (error) return
-    const itemKey = "first_open3"
+    const itemKey = `${wishlist?.slug}.first_open`
     const isFirstTime = localStorage.getItem(itemKey)
     if (isFirstTime == null) {
       setModalIndicationOpen(true)
       localStorage.setItem(itemKey, true)
-      localStorage.setItem("first_id", participant?.id)
+      localStorage.setItem("wishlist", wishlist?.slug)
+      localStorage.setItem(`${wishlist?.slug}.first_id`, participant?.id)
       sendEvent(EventTrack.EventTypes.FIRST_LOAD)
     } else {
       sendEvent(EventTrack.EventTypes.LOAD)
@@ -75,10 +76,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     return participant.ProductParticipants.reduce((accumulator, currentValue) => accumulator + (currentValue.amount), 0);
 
   }, [participant?.ProductParticipants])
-  const [formData, setFormData] = useState({
-    name: '',
-    amount: '',
-  });
 
   const fetchParticipantsInAProduct = (productId) => {
     return supabase
@@ -301,10 +298,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     console.log("handleChangeStep", step)
     sendEvent(EventTrack.EventTypes.STEP_MOVE, { productId: selectedProduct?.id, extra: { step } })
   }
-
-  // useEffect(() => {
-  //   if (participant) setFormData({ ...formData, name: participant.name })
-  // }, [participant])
 
 
   if (error) return <p>{error}</p>

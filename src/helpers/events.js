@@ -50,6 +50,8 @@ export const EventTypesDesc = {
 }
 
 export const send = async (name, participantId, productId, wishlistId, extra = {}) => {
+    const wishlist = localStorage.getItem("wishlist")
+    const first_id = localStorage.getItem("first_id")
     const { data, error } = await supabase
         .from('Events')
         .insert(
@@ -58,7 +60,7 @@ export const send = async (name, participantId, productId, wishlistId, extra = {
                 participant: participantId,
                 product: productId,
                 wishlist_id: wishlistId,
-                extra: { ...extra, first_id: localStorage.getItem("first_id") }
+                extra: { ...extra, first_id: `${wishlist}.${first_id}` }
             },
         )
 }
