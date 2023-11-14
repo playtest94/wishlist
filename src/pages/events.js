@@ -74,10 +74,10 @@ export default function Events({ eventsData }) {
     return (
         <>
             <main
-                className={`${inter.className} p-5 gap-4`}
+                className={`${inter.className} p-5 gap-4 flex flex-col items-center`}
             >
                 {groupedEvents.map(element => {
-                    return <div key={element.date} className="p-5 mb-4 border border-gray-100 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                    return <div key={element.date} className="p-5 mb-4 border border-gray-100 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700 w-full md:w-3/4 lg:w-1/2">
                         <time className="text-lg font-semibold text-gray-900 dark:text-white">{element.date}</time>
                         <ol className="mt-3 divide-y divider-gray-200 dark:divide-gray-700">
                             {element.participants.map(participant => {
@@ -105,9 +105,9 @@ export default function Events({ eventsData }) {
 
                 {
                     detailData && (
-                        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 p-5 gap-4 flex flex-col">
 
-                            <div className="bg-white p-5 w-100 rounded shadow-lg max-h-full overflow-y-scroll min-w-full m-x:10	">
+                            <div className="bg-white p-5 rounded shadow-lg overflow-y-scroll m-x:10	sm:w-9/12 md:w-3/4 lg:w-2/5">
 
                                 <div className="flex justify-end">
                                     <button type="button" className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gray-500 hover:bg-gray-400" onClick={() => setDetailData(null)}>

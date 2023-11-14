@@ -34,7 +34,7 @@ export default function ReferencesModal({ references: initialRefs = [], isEditMo
 
     return <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
 
-        <div className="bg-white p-5 w-100 rounded shadow-lg max-h-full overflow-y-scroll max-md:min-w-full md:w-7/12 m-x:10 flex flex-col flex-wrap content-center">
+        <div className="bg-white p-5 rounded shadow-lg max-h-full overflow-y-scroll m-x:10 flex flex-col flex-wrap content-center w-full md:w-1/2 lg:w-1/3">
 
             <h1 className="text-black font-semibold text-center text-xl mb-4"> Referencias:</h1>
 

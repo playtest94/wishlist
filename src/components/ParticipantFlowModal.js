@@ -176,7 +176,7 @@ export default function ParticipantFlowModal({ folderName, product, participant,
                 <select className="bg-gray-100 p-2 my-4 rounded" id="paymentMethod" name="paymentMethod" onChange={handleInputChange} value={formData.paymentMethod}>
                     <option value="" >Selecciona una opcion</option>
                     {paymentMethods.map(paymentMethod => (
-                        <option key={value} value={`${paymentMethod.name}`}>
+                        <option key={paymentMethod.name} value={`${paymentMethod.name}`}>
                             {paymentMethod.name}
                         </option>
                     ))}
