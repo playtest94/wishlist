@@ -160,7 +160,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     setShowParticipants(false)
   };
 
-  const handleSubmit = async ({ isCredit, participantName, amount, voucherUrl }) => {
+  const handleSubmit = async ({ isCredit, participantName, amount, voucherUrl, paymentMethod }) => {
 
     const productHasEstimatedPrice = selectedProduct.estimated_price !== null
 
@@ -199,7 +199,8 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
         participant_id: pId,
         amount: isCredit ? previus.amount : selectedProduct.estimated_price,
         is_credit: isCredit,
-        voucher_url: voucherUrl
+        voucher_url: voucherUrl,
+        payment_method: paymentMethod
       }
       const { data: productParticipants, error: productParticipantsError } = await supabase
         .from('ProductParticipants')
@@ -234,8 +235,10 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
       setShowSuccessMessage(true)
       setShowConffeti(true)
 
-      sendEvent(isCredit ? EventTrack.EventTypes.FINISH_CREDIT : EventTrack.EventTypes.FINISH_GIFT, { productId: selectedProduct?.id, participantId: pId, extra: { amount } },)
-
+      sendEvent(isCredit ? EventTrack.EventTypes.FINISH_CREDIT : EventTrack.EventTypes.FINISH_GIFT, { productId: selectedProduct?.id, participantId: pId, extra: { amount, paymentMethod } },)
+      if (!participant?.id) {
+        sendEvent(isCredit ? EventTrack.EventTypes.FINISH_CREDIT : EventTrack.EventTypes.FINISH_GIFT, { productId: selectedProduct?.id, extra: { amount, paymentMethod } },)
+      }
     } catch (error) {
       console.log("throw error", error)
       alert('Hubo un error al enviar los datos');
@@ -243,11 +246,6 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
       setIsLoading(false)
     }
   }
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
   const handleProductSubmit = async (e, data) => {
     e.preventDefault();
@@ -270,6 +268,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     }
 
   }
+
   const handleDelete = async (product) => {
     const res = await supabase
       .from("Products")
@@ -296,6 +295,11 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
     }
     setReferences(undefined)
+  }
+
+  const handleChangeStep = (step) => {
+    console.log("handleChangeStep", step)
+    sendEvent(EventTrack.EventTypes.STEP_MOVE, { productId: selectedProduct?.id, extra: { step } })
   }
 
   // useEffect(() => {
@@ -421,22 +425,25 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
             <div className="bg-white p-5 w-100 rounded shadow-lg">
 
-              <h2 className="mb-2 text-xl text-center font-semibold text-gray-900">Aclaraciones:</h2>
+              <h2 className="mb-2 text-xl text-center font-semibold text-gray-900">Como participar:</h2>
               <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
                 <li>
-                  Regalar: Entendemos que te haras cargo la gestion de comprar y pagar el producto.
+                  <span className="font-semibold">Opcion 1:</span> Elegir el artículo que deseas obsequiar y hacer la compra del regalo en la tienda que desees para llevarlo el día del baby shower (no es obligatorio adquirirlo en las tiendas que sugerimos)
                 </li>
                 <li>
-                  Abonar: Significa que aportaras una parte del costo del producto, y nosotros nos encargaremos de toda la gestion.
+                  <span className="font-semibold">Opcion 2:</span>  Abonar un % del costo del producto
                 </li>
                 <li>
-                  Si tu obsequio lo pides por internet y no llega a tiempo, no te preocupes, puedes darnoslo cuando llegue
-                </li>
-                <li>
-                  Puedes abonar en distintos productos y abajo a tu derecha aparecera un boton azul(presionalo para ver las opciones de pago) con el monto total que todos tus abonos.
+                  <span className="font-semibold">Opcion 3:</span> Abonar el 100% del costos del producto y nosotros nos encargamos de la logística de compra.
                 </li>
               </ul>
 
+              <div className="flex text-black max-w-md mt-5">
+                <svg width="30px" height="30px" viewBox="0 0 24 24" className="mr-2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 16.99V17M12 7V14M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Si tu obsequio lo pides por internet y no llega a tiempo, no te preocupes, puedes darnoslo cuando llegue
+              </div>
               <div className="flex text-black max-w-md mt-5">
                 <svg width="30px" height="30px" viewBox="0 0 24 24" className="mr-2" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 16.99V17M12 7V14M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -524,11 +531,13 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 
       {isModalOpen && selectedProduct &&
         <ParticipantFlowModal
+          paymentMethods={wishlist?.payment_methods}
           folderName={wishlist?.slug}
           product={selectedProduct}
           onClose={closeModal}
           participant={participant}
           onFinish={handleSubmit}
+          onChangeStep={handleChangeStep}
         />}
 
       {showConffeti && <Confetti />}

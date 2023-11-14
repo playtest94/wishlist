@@ -1,5 +1,12 @@
 import supabase from "./supabase-client"
 
+const StepSectionMap = {
+    "initial": "Seleccion de participacion",
+    "references": "Referencias",
+    "set_amount": "Colocar monto",
+    "payment": "Subir comprobante",
+}
+
 export const EventTypes = {
     LOAD: "LOAD",
     FIRST_LOAD: "FIRST_LOAD",
@@ -10,7 +17,8 @@ export const EventTypes = {
     OPEN_ACLARATIONS_PRESS: "OPEN_ACLARATIONS_PRESS",
     OPEN_PAYMENT_METHODS_PRESS: "OPEN_PAYMENT_METHODS_PRESS",
     FINISH_CREDIT: "FINISH_CREDIT",
-    FINISH_GIFT: "FINISH_CREDIT"
+    FINISH_GIFT: "FINISH_CREDIT",
+    STEP_MOVE: "STEP_MOVE"
 }
 
 export const EventTypesTitles = {
@@ -23,7 +31,8 @@ export const EventTypesTitles = {
     OPEN_ACLARATIONS_PRESS: "Abrio las aclaraciones",
     OPEN_PAYMENT_METHODS_PRESS: "Abrio los metodos de pago",
     FINISH_CREDIT: "Abono a un producto",
-    FINISH_GIFT: "Se encargara de regalarte un producto"
+    FINISH_GIFT: "Se encargara de regalarte un producto",
+    STEP_MOVE: "Esta en el proceso de participar"
 }
 
 export const EventTypesDesc = {
@@ -35,8 +44,9 @@ export const EventTypesDesc = {
     OPEN_REFERENCE_PRESS: (productName) => `Visito la referencia de ${productName}`,
     OPEN_ACLARATIONS_PRESS: () => "",
     OPEN_PAYMENT_METHODS_PRESS: () => "",
-    FINISH_CREDIT: (productName, extra = {}) => `Hizo un abono de ${extra?.amount} USD a ${productName}`,
+    FINISH_CREDIT: (productName, extra = {}) => `Hizo un abono de ${extra?.amount} USD a ${productName} por ${extra?.paymentMethod}`,
     FINISH_GIFT: (productName) => `Se encargara de regalarte ${productName}`,
+    STEP_MOVE: (productName, extra = {}) => `Se movio a la seccion '${StepSectionMap[extra?.step] || extra?.step}' para participar por ${productName}`,
 }
 
 export const send = async (name, participantId, productId, wishlistId, extra = {}) => {
