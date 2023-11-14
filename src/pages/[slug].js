@@ -13,6 +13,7 @@ import supabase from "@/helpers/supabase-client"
 import ItemFormModal from '@/components/ItemFormModal';
 import ReferencesModal from '@/components/ReferencesModal';
 import ParticipantFlowModal from '@/components/ParticipantFlowModal';
+import { checkIfValidUUID } from '@/helpers/utils';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -543,12 +544,19 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
 }
 
 
-const fetchParticipantByNotionIdOrSlug = async (participantId) => supabase
-  .from('Participants')
-  .select('*,ProductParticipants(*)')
-  .or(`notion_id.eq.${participantId},slug.id.${participantId}`)
-  .limit(1)
-  .single()
+const fetchParticipantByNotionIdOrSlug = async (participantId) => {
+  const isUuid = checkIfValidUUID(participantId)
+  const base = supabase
+    .from('Participants')
+    .select('*,ProductParticipants(*)')
+
+  if (isUuid) base.eq("notion_id", participantId)
+  if (!isUuid) base.eq("slug", participantId)
+
+  return base
+    .limit(1)
+    .single()
+}
 
 const fetchProducts = (wishlist, editMode = false) => {
 
@@ -584,7 +592,6 @@ export async function getServerSideProps(ctx) {
   }
 
   const { data: wishlist } = await fetchWishlist(slug)
-  console.log(wishlist)
   if (!wishlist) return {
     props: {
       error: "Esta lista no existe"
