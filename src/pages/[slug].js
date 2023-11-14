@@ -545,7 +545,7 @@ const fetchParticipantByNotionIdOrSlug = async (participantId, wishlist) => {
   const base = supabase
     .from('Participants')
     .select('*,ProductParticipants(*)')
-    .eq("wishlist", wishlist)
+    .eq("wishlist", wishlist.id)
 
   if (isUuid) base.eq("notion_id", participantId)
   if (!isUuid) base.eq("slug", participantId)
