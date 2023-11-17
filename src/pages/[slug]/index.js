@@ -384,7 +384,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
               setShowProductForm(true)
             }}
             onDeletePress={() => {
-              handleDelete(product)
+              // handleDelete(product)
             }}
             fetchParticipantsInAProduct={fetchParticipantsInAProduct}
 
@@ -601,7 +601,7 @@ export async function getServerSideProps(ctx) {
   }
 
   // Pass data to the page via props
-
+  console.log(dataProducts.length)
   return {
     props: {
       productsData: dataProducts || null,
