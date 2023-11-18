@@ -157,12 +157,34 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     setShowParticipants(false)
   };
 
+
+  const checkIfLiveProductReserved = async (productId) => {
+    try {
+      const { data, error } = await fetchProductById(productId)
+      if (error) throw error
+      return data.reserved
+    } catch (error) {
+      console.log(error)
+    }
+    return false
+  }
+
   const handleSubmit = async ({ isCredit, participantName, amount, voucherUrl, paymentMethod }) => {
 
     const productHasEstimatedPrice = selectedProduct.estimated_price !== null
 
     try {
       setIsLoading(true)
+
+      if (!isCredit) {
+        const isLiveReserved = await checkIfLiveProductReserved(selectedProduct.id)
+        if (isLiveReserved) {
+          alert("Ups, al parecer alguien mas reservo este regalo, recargaremos la pagina para que revises nuevamente los articulos")
+          window?.location?.reload?.()
+          return
+        }
+      }
+
       let pId = participant?.id
       if (!pId) { // se crea el participante si no existe
         const { data: participantCreated, error } = await supabase
@@ -538,6 +560,16 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
   )
 }
 
+
+const fetchProductById = async (id) => {
+  return supabase
+    .from('Products')
+    .select('*,Participants(id,name)')
+    .eq("id", id)
+    .limit(1)
+    .single()
+
+}
 
 const fetchParticipantByNotionIdOrSlug = async (participantId, wishlist) => {
   const isUuid = checkIfValidUUID(participantId)
