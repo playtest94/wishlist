@@ -102,7 +102,7 @@ export default function Participations({ participationData }) {
                   Metodo
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Es Abono?
+                  Voucher
                 </th>
                 <th scope="col" className="px-6 py-3">
                   -
@@ -113,7 +113,7 @@ export default function Participations({ participationData }) {
               {participations.filter(p => p.is_credit).map((participation) => {
                 const {
                   id,
-                  is_credit: isCredit,
+                  voucher_url: voucherUrl,
                   amount,
                   payment_method: paymentMethod,
                   completed,
@@ -135,7 +135,9 @@ export default function Participations({ participationData }) {
                     {`${paymentMethod || ""}${completed ? " - ✅" : ""}`}
                   </td>
                   <td className="px-6 py-4">
-                    {isCredit ? "SI" : "NO"}
+                    {voucherUrl && <div className="md:shrink-0">
+                      <img className="w-20 h-20 object-contain" src={voucherUrl || "https://placehold.co/800x400"} alt="" />
+                    </div>}
                   </td>
                   <td className="px-6 py-4">
                     <button type="button" className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gray-500 hover:bg-gray-400" onClick={() => setDetailData(participation)}>
