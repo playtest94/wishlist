@@ -213,9 +213,9 @@ export default function Participations({ participationData }) {
 
       {
         detailData && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="absolute inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
 
-            <div className="bg-white p-5 rounded shadow-lg overflow-y-scroll ">
+            <div className="bg-white p-10 md:w-1/2 lg:w-1/3 roundedshadow-lg overflow-y-scroll max-sm:min-w-full flex flex-col flex-wrap content-center h-full overflow-y-auto">
 
               <form onSubmit={handleSubmit} >
 
