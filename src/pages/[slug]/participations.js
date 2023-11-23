@@ -135,7 +135,9 @@ export default function Participations({ participationData }) {
                     {`${paymentMethod || ""}${completed ? " - ✅" : ""}`}
                   </td>
                   <td className="px-6 py-4">
-                    {voucherUrl && <div className="md:shrink-0">
+                    {voucherUrl && <div
+                      onClick={() => window.open(voucherUrl, "_blank")}
+                      className="md:shrink-0 cursor-pointer">
                       <img className="w-20 h-20 object-contain" src={voucherUrl || "https://placehold.co/800x400"} alt="" />
                     </div>}
                   </td>
