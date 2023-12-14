@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
 
 
 import { Inter } from 'next/font/google'
@@ -169,6 +170,24 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
     return false
   }
 
+  const sendNotificationEmail = async ({ isCredit, amount, paymentMethod, participantName, voucherUrl }) => {
+    const templateName = isCredit ? "newcredit" : "newgift"
+
+    await axios.post('/api/email', {
+      targetName: wishlist?.slug?.toUpperCase(),
+      targetRecipient: wishlist?.owner_email,
+      templateName: templateName,
+      data: {
+        productName: selectedProduct?.name,
+        productImage: selectedProduct?.image_url,
+        amount: `${amount} USD`,
+        paymentMethod,
+        participantName,
+        voucherImage: voucherUrl
+      }
+    })
+  }
+
   const handleSubmit = async ({ isCredit, participantName, amount, voucherUrl, paymentMethod }) => {
 
     const productHasEstimatedPrice = selectedProduct.estimated_price !== null
@@ -249,6 +268,9 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
           .eq("id", productParticipants[0].id)
         throw productUpdateError
       }
+
+      sendNotificationEmail({ isCredit, amount, paymentMethod, participantName, voucherUrl }).catch(console.log)
+
       closeModal()
       updateProductOnList(productUpdated[0])
       fetchParticipantById(pId)
@@ -256,15 +278,15 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
       setShowConffeti(true)
 
       sendEvent(isCredit ? EventTrack.EventTypes.FINISH_CREDIT : EventTrack.EventTypes.FINISH_GIFT, { productId: selectedProduct?.id, participantId: pId, extra: { amount, paymentMethod } },)
-      if (!participant?.id) {
-        sendEvent(isCredit ? EventTrack.EventTypes.FINISH_CREDIT : EventTrack.EventTypes.FINISH_GIFT, { productId: selectedProduct?.id, extra: { amount, paymentMethod } },)
-      }
+
+
     } catch (error) {
       console.log("throw error", error)
       alert('Hubo un error al enviar los datos');
     } finally {
       setIsLoading(false)
     }
+
   }
 
   const handleProductSubmit = async (e, data) => {
