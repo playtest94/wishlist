@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 
 import * as templates from "../../email-templates"
 
+console.log("process.env.RESEND_API_KEY", process.env.RESEND_API_KEY)
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
