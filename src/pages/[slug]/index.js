@@ -464,7 +464,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
               <h2 className="mb-2 text-xl text-center font-semibold text-pink-700">Como participar:</h2>
               <ul className="max-w-md space-y-1 text-pink-600 list-disc list-inside">
                 <li>
-                  <span className="font-semibold">Opcion 1:</span> Elegir el artículo que deseas obsequiar y hacer la compra del regalo en la tienda que desees para llevarlo el día del baby shower (no es obligatorio adquirirlo en las tiendas que sugerimos)
+                  <span className="font-semibold">Opcion 1:</span> Elegir el artículo que deseas obsequiar y hacer la compra del regalo en la tienda que desees para llevarlo el día del evento (no es obligatorio adquirirlo en las tiendas que sugerimos)
                 </li>
                 <li>
                   <span className="font-semibold">Opcion 2:</span>  Abonar un % del costo del producto
