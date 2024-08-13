@@ -632,7 +632,7 @@ const fetchWishlist = (slug) => supabase
 
 
 export async function getServerSideProps(ctx) {
-  const { p: participantId, code, slug } = ctx.query
+  const { p: participantId, slug } = ctx.query
 
   if (!slug) return {
     props: {
@@ -646,9 +646,8 @@ export async function getServerSideProps(ctx) {
       error: "Esta lista no existe"
     }
   }
-  const editMode = code === wishlist?.edit_code
 
-  const { data: dataProducts } = await fetchProducts(wishlist, editMode)
+  const { data: dataProducts } = await fetchProducts(wishlist, false)
   let participant = null
   if (participantId) {
     const { data, error } = await fetchParticipantByNotionIdOrSlug(participantId, wishlist)
@@ -656,13 +655,12 @@ export async function getServerSideProps(ctx) {
   }
 
   // Pass data to the page via props
-  console.log(dataProducts.length)
   return {
     props: {
       productsData: dataProducts || null,
       participantData: participant || null,
       wishlist,
-      editMode
+      editMode: false
     }
   }
 }
