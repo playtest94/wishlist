@@ -4,7 +4,7 @@ import CloudinaryUploadWidget from './CloudinaryUploadWidget';
 const cloudNameEnv = process.env.NEXT_PUBLIC_CLOUD_NAME;
 const uploadPresetEnv = process.env.NEXT_PUBLIC_UPLOAD_PRESET;
 
-export default function ItemFormModal({ folderName, data = {}, onSubmit, onClosePress, nonEditable = [], nonVisible = [], exclude = [] }) {
+export default function ItemFormModal({ folderName, data = {}, onSubmit, onClosePress, booleanFields = [], nonEditable = [], nonVisible = [], excludeOnSubmit = [] }) {
 
     const [formData, setFormData] = useState(data);
     const [isLoading, setIsLoading] = useState(false)
@@ -49,7 +49,7 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
         const filtered = {}
 
         Object.keys(data).forEach((key) => {
-            if (!exclude.includes(key))
+            if (!excludeOnSubmit.includes(key))
                 filtered[key] = formData[key];
         })
 
@@ -71,7 +71,7 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
                     if (key.endsWith("url")) {
 
                         return <div className="mb-2" key={key}>
-                            <label htmlFor="amount" className="block text-sm font-medium text-gray-700">{`${key}:`}</label>
+                            <label className="block text-sm font-medium text-gray-700">{`${key}:`}</label>
 
                             <CloudinaryUploadWidget uwConfig={uwConfig} onSuccess={(url) => {
                                 setFormData({ ...formData, [key]: url })
@@ -83,7 +83,7 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
                     }
                     if (formData[key] && typeof (formData[key]) === "object" && formData[key].name) {
                         return <div className="mb-4" key={`${key}_name`}>
-                            <label htmlFor="amount" className="text-sm font-medium text-gray-700">{`${key}_name:`}</label>
+                            <label htmlFor={`${key}_name`} className="text-sm font-medium text-gray-700">{`${key}_name:`}</label>
                             <input
                                 disabled={true}
                                 id={`${key}_name`}
@@ -93,8 +93,25 @@ export default function ItemFormModal({ folderName, data = {}, onSubmit, onClose
                         </div>
                     }
 
+                    if (booleanFields.includes(key)) {
+                        return <div className="flex items-center mb-4 w-20 mt-4" key={key}>
+                            <label htmlFor={key} className="text-sm font-medium text-gray-700">{`${key}:`}</label>
+                            <input
+                                type="checkbox"
+                                checked={formData[key]}
+                                onClick={() => {
+                                    setFormData({ ...formData, [key]: !formData[key] });
+                                }}
+                                onChange={() => { }}
+                                id={key}
+                                name={`${key}`}
+                                value={formData[key]}
+                                className="w-full p-2 border rounded text-black" />
+                        </div>
+                    }
+
                     return <div className="mb-2" key={key}>
-                        <label htmlFor="amount" className="block text-sm font-medium text-gray-700">{`${key}:`}</label>
+                        <label htmlFor={key} className="block text-sm font-medium text-gray-700">{`${key}:`}</label>
                         <input
                             disabled={nonEditable.includes(key)}
                             id={key}

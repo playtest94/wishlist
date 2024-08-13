@@ -399,7 +399,7 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
                 reference_link: "",
                 reserved: false,
                 priority: 0,
-                visible: false,
+                visible: true,
                 wishlist: wishlist?.id
               })
               setShowProductForm(true)
@@ -549,8 +549,9 @@ export default function Home({ wishlist, error, editMode = false, productsData, 
             setSelectedProduct(null);
           }}
           nonEditable={["id"]}
-          nonVisible={["Participants", "wishlist", "created_at", "credit_amount", "reserved", "references"]}
-          exclude={["Participants", "credit_amount", "reserved", "references"]}
+          booleanFields={["visible"]}
+          nonVisible={["Participants", "wishlist", "created_at", "credit_amount", "reserved", "references", "reference_link"]}
+          excludeOnSubmit={["Participants", "credit_amount", "reserved", "references", "reference_link"]}
         />}
 
       {(references?.data === null || references?.data) &&
